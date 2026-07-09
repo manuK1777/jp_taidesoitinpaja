@@ -1,0 +1,13 @@
+{
+  "name": "taidesoitinpaja-import",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "import": "node import-instruments.js"
+  },
+  "dependencies": {
+    "@sanity/client": "^6.22.0",
+    "dotenv": "^16.4.5"
+  }
+}
