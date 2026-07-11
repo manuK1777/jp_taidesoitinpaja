@@ -1,0 +1,23 @@
+---
+import { sanityClient } from '../lib/sanity';
+
+const instruments = await sanityClient.fetch(
+  `*[_type == "instrument"] | order(order asc) { name, price, availability }`
+);
+---
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Sanity Connection Test</title>
+  </head>
+  <body>
+    <h1>Sanity Connection Test</h1>
+    <p>Found {instruments.length} instruments:</p>
+    <ul>
+      {instruments.map((inst: any) => (
+        <li>{inst.name} — €{inst.price} ({inst.availability})</li>
+      ))}
+    </ul>
+  </body>
+</html>
