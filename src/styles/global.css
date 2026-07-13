@@ -9,16 +9,16 @@
 
 :root {
   /* Color */
-  --color-bg: #1a2420;          /* deep spruce-black */
-  --color-bg-raised: #212e28;   /* slightly lighter panel */
-  --color-cream: #ede3d0;       /* raw birch cream */
-  --color-walnut: #5c3d2e;      /* walnut brown */
-  --color-brass: #a67c42;       /* aged brass accent */
-  --color-oxblood: #8b3a2e;     /* rare accent — use sparingly */
+  --color-bg: oklch(97% 0.015 85);          /* light birch-cream page bg */
+  --color-bg-raised: oklch(92% 0.03 80);    /* shaded panel/section band */
+  --color-cream: oklch(24% 0.03 60);        /* primary ink — warm near-black */
+  --color-walnut: oklch(45% 0.02 70);       /* walnut brown */
+  --color-brass: oklch(70% 0.13 80);        /* aged brass accent */
+  --color-oxblood: oklch(40% 0.1 30);       /* rare accent — use sparingly */
 
   --color-text: var(--color-cream);
-  --color-text-muted: #c9bfa9;
-  --color-border: rgba(237, 227, 208, 0.14);
+  --color-text-muted: oklch(35% 0.02 63);
+  --color-border: oklch(85% 0.02 80);
 
   /* Type */
   --font-display: 'Fraunces Variable', 'Fraunces', serif;
@@ -35,7 +35,7 @@
 
   /* Layout */
   --content-max: 72rem;
-  --radius: 2px; /* deliberately near-square — carved, not soft/app-like */
+  --radius: 4px;
 }
 
 * {
@@ -44,6 +44,10 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+::selection {
+  background: color-mix(in oklch, var(--color-brass) 35%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {

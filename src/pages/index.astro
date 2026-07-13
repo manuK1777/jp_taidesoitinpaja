@@ -2,7 +2,9 @@
 import Layout from '../layouts/Layout.astro';
 import CarvedDivider from '../components/CarvedDivider.astro';
 import InstrumentCard from '../components/InstrumentCard.astro';
-import { sanityClient, urlFor } from '../lib/sanity';
+import GalleryFilmstrip from '../components/GalleryFilmstrip.astro';
+import WorkshopModal from '../components/WorkshopModal.astro';
+import { sanityClient } from '../lib/sanity';
 
 // Static assets — place these files in src/assets/ (see setup notes below)
 import heroImage from '../assets/home-hero.jpg';
@@ -10,8 +12,40 @@ import ourStoryImage from '../assets/home-our-story.jpg';
 import logoIcon from '../assets/logo-icon.png';
 import { Image } from 'astro:assets';
 
+const navItems = [
+  { label: 'Home', href: '/' },
+  { label: 'Instruments', href: '/instruments' },
+  { label: 'Repair & Maintenance', href: '/repair-maintenance' },
+  { label: 'Workshops & Events', href: '/workshops-events' },
+  { label: 'Our Story', href: '/our-story' },
+  { label: 'Contact', href: '/contact' },
+];
+
+const services = [
+  {
+    title: 'Handcrafted Instruments',
+    tag: 'Crafted with care',
+    body: 'Explore the selection of handcrafted folk instruments at Taidesoitinpaja. Each item is carefully made in our luthier workshop, reflecting outstanding artistry and quality — igils, jouhikkos, air-tunable drums, and more.',
+  },
+  {
+    title: 'Customized Design',
+    tag: 'Personal touch',
+    body: 'Transform your instrument with a personal touch. We partner with you to create a distinctive piece that showcases your style and sound, reflecting your unique identity.',
+  },
+  {
+    title: 'Repair Service',
+    tag: 'Restore & revive',
+    body: 'Trust Taidesoitinpaja for instrument repairs. We specialize in restoring and reviving instruments to their former glory — let us breathe new life into your beloved instrument.',
+  },
+  {
+    title: 'Workshops & Events',
+    tag: 'Join our interactive courses',
+    body: 'Immerse yourself in the art of crafting instruments. Learn drum-making, build yourself a jouhikko, or try throat singing — experience the joy of creating your own musical masterpiece.',
+  },
+];
+
 const featuredInstruments = await sanityClient.fetch(`
-  *[_type == "instrument"] | order(order asc) [0...4] {
+  *[_type == "instrument"] | order(order asc) [0...6] {
     name,
     "slug": slug.current,
     price,
@@ -27,9 +61,9 @@ const homePage = await sanityClient.fetch(`
   }
 `);
 
-const nextEvent = await sanityClient.fetch(`
+const upcomingWorkshops = await sanityClient.fetch(`
   *[_type == "workshopEvent" && defined(startDateTime) && startDateTime > now()]
-    | order(startDateTime asc) [0] {
+    | order(startDateTime asc) [0...4] {
     title, shortDescription, startDateTime, location
   }
 `);
@@ -39,136 +73,201 @@ const nextEvent = await sanityClient.fetch(`
   <header class="site-header">
     <div class="container site-header__inner">
       <a href="/" class="site-header__brand">
-        <Image src={logoIcon} alt="Taidesoitinpaja" width={36} height={36} />
-        <span>Taidesoitinpaja</span>
+        <Image src={logoIcon} alt="Taidesoitinpaja" width={34} height={34} class="site-header__logo" />
+        <span class="site-header__brand-text">
+          <span class="site-header__name">Taidesoitinpaja</span>
+          <span class="site-header__tagline">J-P Lilja, Luthier</span>
+        </span>
       </a>
-      <nav class="site-header__nav">
-        <a href="/instruments">Instruments</a>
-        <a href="/workshops-events">Workshops &amp; Events</a>
-        <a href="/repair-maintenance">Repair</a>
-        <a href="/our-story">Our Story</a>
-        <a href="/contact">Contact</a>
+
+      <nav class="site-header__nav" id="site-nav">
+        {navItems.map((item) => (
+          <a href={item.href}>{item.label}</a>
+        ))}
       </nav>
+
+      <div class="site-header__icons">
+        <a href="/account" class="site-header__icon-link" aria-label="Account">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7" />
+          </svg>
+          <span class="site-header__icon-label">Log In</span>
+        </a>
+        <a href="/cart" class="site-header__icon-link" aria-label="Cart">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 8h16l-1.5 11a2 2 0 0 1-2 1.8H7.5a2 2 0 0 1-2-1.8L4 8Z" />
+            <path d="M8 8V6a4 4 0 0 1 8 0v2" />
+          </svg>
+          <span>0</span>
+        </a>
+        <button type="button" class="site-header__menu-toggle" id="site-nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18M3 12h18M3 18h18" />
+          </svg>
+        </button>
+      </div>
     </div>
   </header>
 
-  <section class="hero">
-    <Image src={heroImage} alt="" class="hero__image" />
-    <div class="hero__scrim"></div>
-    <div class="container hero__content">
+  <script>
+    const navToggle = document.getElementById('site-nav-toggle');
+    const nav = document.getElementById('site-nav');
+
+    navToggle?.addEventListener('click', () => {
+      const isOpen = nav?.classList.toggle('is-open');
+      navToggle.setAttribute('aria-expanded', String(Boolean(isOpen)));
+    });
+
+    nav?.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        nav.classList.remove('is-open');
+        navToggle?.setAttribute('aria-expanded', 'false');
+      });
+    });
+  </script>
+
+  <section class="hero container">
+    <div class="hero__text">
       <p class="eyebrow">Karjalohja, Finland</p>
       <h1>Instruments carved<br />from patience and wood.</h1>
       <p class="hero__sub">Handcrafted igils, jouhikkos, doshpuluurs, and frame drums — each one built by hand, one at a time.</p>
       <a href="/instruments" class="btn btn--solid">See the instruments</a>
     </div>
+    <div class="hero__image-wrap">
+      <Image src={heroImage} alt="J-P Lilja's luthier workshop" class="hero__image" />
+    </div>
   </section>
 
-  <section class="container section reveal">
-    <p class="eyebrow">Featured</p>
-    <h2>From the workshop</h2>
-    <div class="featured-grid">
-      {featuredInstruments.map((inst: any) => (
-        <InstrumentCard
-          name={inst.name}
-          slug={inst.slug}
-          price={inst.price}
-          categoryTitle={inst.categoryTitle}
-          image={inst.image}
-        />
-      ))}
+  <section class="instruments-band reveal">
+    <div class="container">
+      <div class="instruments-band__header">
+        <div>
+          <p class="eyebrow">Featured</p>
+          <h2>From the workshop</h2>
+          <p class="instruments-band__sub">Igils, jouhikkos, doshpuluurs, and hand-tuned frame drums — carved one at a time.</p>
+        </div>
+        <a href="/instruments" class="instruments-band__cta">View All Instruments →</a>
+      </div>
+      <div class="instruments-band__grid">
+        {featuredInstruments.map((inst: any) => (
+          <InstrumentCard
+            name={inst.name}
+            slug={inst.slug}
+            price={inst.price}
+            categoryTitle={inst.categoryTitle}
+            image={inst.image}
+          />
+        ))}
+      </div>
     </div>
   </section>
 
   <CarvedDivider />
 
-  {homePage?.previousWorks?.length > 0 && (
-    <section class="section reveal">
-      <div class="container">
-        <p class="eyebrow">Previous Works</p>
-        <h2>Instruments that found a home</h2>
+  <section class="services container reveal">
+    <h2 class="services__heading">Luthier Workshop Services</h2>
+    <div class="services__layout">
+      <div class="services__image-wrap">
+        <Image src={ourStoryImage} alt="Inside J-P Lilja's luthier workshop" class="services__image" />
       </div>
-      <div class="filmstrip">
-        {homePage.previousWorks.map((item: any) => (
-          <div class="filmstrip__item">
-            <Image
-              src={urlFor(item.image).width(500).height(650).fit('crop').auto('format').url()}
-              alt={item.caption || ''}
-              width={500}
-              height={650}
-              loading="lazy"
-            />
+      <div class="services__list">
+        {services.map((service) => (
+          <div class="services__item">
+            <h3>{service.title}</h3>
+            <div class="services__tag">{service.tag}</div>
+            <p>{service.body}</p>
+            {service.title === 'Workshops & Events' && (
+              <WorkshopModal events={upcomingWorkshops} />
+            )}
           </div>
         ))}
       </div>
-    </section>
+    </div>
+  </section>
+
+  {homePage?.previousWorks?.length > 0 && (
+    <GalleryFilmstrip
+      eyebrow="Previous Works"
+      title="Instruments that found a home"
+      items={homePage.previousWorks}
+      imgWidth={500}
+      imgHeight={650}
+      itemWidth="260px"
+    />
   )}
 
   {homePage?.workInProgress?.length > 0 && (
-    <section class="section reveal">
-      <div class="container">
-        <p class="eyebrow">Work in Progress</p>
-        <h2>Behind the scenes</h2>
-      </div>
-      <div class="filmstrip filmstrip--small">
-        {homePage.workInProgress.map((item: any) => (
-          <div class="filmstrip__item">
-            <Image
-              src={urlFor(item.image).width(360).height(450).fit('crop').auto('format').url()}
-              alt={item.caption || ''}
-              width={360}
-              height={450}
-              loading="lazy"
-            />
-          </div>
-        ))}
-      </div>
-    </section>
+    <GalleryFilmstrip
+      eyebrow="Work in Progress"
+      title="Work in Process Gallery"
+      items={homePage.workInProgress}
+      imgWidth={360}
+      imgHeight={450}
+      itemWidth="200px"
+      muted
+    />
   )}
 
   <CarvedDivider flip />
 
-  <section class="container section section--split reveal">
-    <Image src={ourStoryImage} alt="J-P Lilja in his workshop" class="split__image" />
-    <div class="split__content">
-      <p class="eyebrow">Our Story</p>
-      <h2>One luthier. One workshop. No shortcuts.</h2>
-      <p>Every instrument that leaves Taidesoitinpaja is shaped, carved, and strung by hand in Karjalohja — a craft passed through patience rather than production lines.</p>
-      <a href="/our-story" class="btn">Read our story</a>
-    </div>
+  <section class="our-story container reveal">
+    <h2>Our Story</h2>
+    <p class="eyebrow our-story__eyebrow">Crafting Musical Legacies</p>
+    <p class="our-story__body">Every instrument that leaves Taidesoitinpaja is shaped, carved, and strung by hand in Karjalohja — a craft passed through patience rather than production lines.</p>
   </section>
 
-  {nextEvent && (
-    <section class="container section reveal">
-      <p class="eyebrow">Coming up</p>
-      <h2>{nextEvent.title}</h2>
-      {nextEvent.shortDescription && <p>{nextEvent.shortDescription}</p>}
-      <a href="/workshops-events" class="btn">See all workshops &amp; events</a>
-    </section>
-  )}
+  <div class="wide-banner">
+    <Image src={heroImage} alt="J-P Lilja at work in the workshop" class="wide-banner__image" />
+  </div>
 
   <footer class="site-footer">
     <div class="container site-footer__inner">
       <div>
-        <Image src={logoIcon} alt="Taidesoitinpaja" width={40} height={40} />
-        <p>Taidesoitinpaja</p>
+        <div class="site-footer__brand">Taidesoitinpaja</div>
+        <p>Handcrafted folk instruments from a one-person luthier workshop in Finland.</p>
       </div>
       <div>
-        <p class="eyebrow">Address</p>
-        <p>Lahdenperä 142, 09120 Karjalohja, Finland</p>
+        <div class="site-footer__heading">Explore</div>
+        <div class="site-footer__links">
+          {navItems.map((item) => (
+            <a href={item.href}>{item.label}</a>
+          ))}
+        </div>
       </div>
       <div>
-        <p class="eyebrow">Contact</p>
-        <p>+358 40 575 5403<br />taidesoitinpaja@gmail.com</p>
+        <div class="site-footer__heading">Contact</div>
+        <p class="site-footer__contact">
+          Taidesoitinpaja<br />
+          J-P Lilja<br />
+          Lahdenperä 142, 09120 Karjalohja, Finland<br /><br />
+          +358 40 575 5403<br />
+          taidesoitinpaja@gmail.com
+        </p>
       </div>
+    </div>
+    <div class="container site-footer__bottom">
+      © {new Date().getFullYear()} Taidesoitinpaja. All rights reserved.
     </div>
   </footer>
 </Layout>
 
 <style>
+  /* Header */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in oklch, var(--color-bg) 97%, transparent);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--color-border);
+  }
   .site-header__inner {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: var(--space-2);
     padding-block: var(--space-2);
   }
   .site-header__brand {
@@ -176,124 +275,270 @@ const nextEvent = await sanityClient.fetch(`
     align-items: center;
     gap: var(--space-1);
     text-decoration: none;
+    flex-shrink: 0;
+  }
+  .site-header__logo {
+    border-radius: 50%;
+  }
+  .site-header__brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+  .site-header__name {
     font-family: var(--font-display);
+    font-weight: 700;
     font-size: 1.15rem;
+    color: var(--color-cream);
+  }
+  .site-header__tagline {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
   }
   .site-header__nav {
     display: flex;
+    align-items: center;
     gap: var(--space-3);
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    min-width: 0;
   }
   .site-header__nav a {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-cream);
     text-decoration: none;
-    color: var(--color-text-muted);
+    padding-block: 6px;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
   }
   .site-header__nav a:hover {
-    color: var(--color-brass);
+    border-bottom-color: var(--color-brass);
+  }
+  .site-header__icons {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-shrink: 0;
+  }
+  .site-header__menu-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--color-cream);
+    cursor: pointer;
+  }
+  .site-header__icon-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-cream);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
   }
 
+  @media (max-width: 1180px) and (min-width: 901px) {
+    .site-header__nav {
+      gap: var(--space-1);
+      font-size: 0.8rem;
+    }
+  }
+  @media (max-width: 900px) {
+    .site-header__menu-toggle {
+      display: flex;
+    }
+    .site-header__icon-label {
+      display: none;
+    }
+    .site-header__nav {
+      display: none;
+      position: absolute;
+      inset-inline: 0;
+      top: 100%;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-2) var(--space-3) var(--space-3);
+    }
+    .site-header__nav.is-open {
+      display: flex;
+    }
+    .site-header__nav a {
+      width: 100%;
+      padding-block: 10px;
+    }
+  }
+
+  /* Hero */
   .hero {
-    position: relative;
-    min-height: 88vh;
-    display: flex;
-    align-items: flex-end;
-    overflow: hidden;
+    display: grid;
+    gap: var(--space-4);
+    align-items: center;
+    padding-block: var(--space-5) var(--space-5);
   }
-  .hero :global(.hero__image) {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  @media (min-width: 900px) {
+    .hero {
+      grid-template-columns: 0.85fr 1.15fr;
+    }
   }
-  .hero__scrim {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(26,36,32,0.15) 0%, rgba(26,36,32,0.55) 60%, rgba(26,36,32,0.92) 100%);
-  }
-  .hero__content {
-    position: relative;
-    padding-bottom: var(--space-5);
-    max-width: 40rem;
+  .hero h1 {
+    color: var(--color-brass);
   }
   .hero__sub {
     margin-block: var(--space-2) var(--space-3);
     font-size: 1.1rem;
   }
-
-  .section {
-    padding-block: var(--space-5);
+  .hero__image-wrap {
+    border-radius: var(--radius);
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
   }
-  .section > .eyebrow {
-    display: block;
-    margin-bottom: var(--space-1);
-  }
-  .section h2 {
-    margin-bottom: var(--space-3);
-  }
-
-  .featured-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-3);
-  }
-  @media (min-width: 900px) {
-    .featured-grid {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-
-  .filmstrip {
-    display: flex;
-    gap: var(--space-2);
-    overflow-x: auto;
-    padding-inline: var(--space-3);
-    scroll-snap-type: x mandatory;
-    padding-bottom: var(--space-1);
-  }
-  .filmstrip__item {
-    flex: 0 0 auto;
-    scroll-snap-align: start;
-    width: 260px;
-  }
-  .filmstrip--small .filmstrip__item {
-    width: 190px;
-    filter: saturate(0.9);
-  }
-  .filmstrip__item img {
+  .hero__image-wrap :global(.hero__image) {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
-    border: 1px solid var(--color-border);
   }
 
-  .section--split {
+  /* Instruments band */
+  .instruments-band {
+    background: var(--color-bg-raised);
+    padding-block: var(--space-5);
+  }
+  .instruments-band__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-3);
+  }
+  .instruments-band__sub {
+    margin-top: 0.4em;
+  }
+  .instruments-band__cta {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-cream);
+    text-decoration: none;
+    border-bottom: 2px solid var(--color-brass);
+    padding-bottom: 3px;
+    white-space: nowrap;
+  }
+  .instruments-band__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+  @media (min-width: 700px) {
+    .instruments-band__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Services */
+  .services {
+    padding-block: var(--space-5);
+  }
+  .services__heading {
+    text-align: center;
+    margin-bottom: var(--space-4);
+  }
+  .services__layout {
     display: grid;
     gap: var(--space-4);
-    align-items: center;
+    align-items: start;
   }
   @media (min-width: 800px) {
-    .section--split {
+    .services__layout {
       grid-template-columns: 1fr 1fr;
     }
   }
-  .section--split :global(.split__image) {
-    width: 100%;
-    height: auto;
-    border: 1px solid var(--color-border);
+  .services__image-wrap {
+    border-radius: var(--radius);
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    position: sticky;
+    top: 100px;
   }
-  .split__content p {
-    margin-block: var(--space-2);
+  .services__image-wrap :global(.services__image) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .services__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .services__item {
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--space-3);
+  }
+  .services__item h3 {
+    color: var(--color-brass);
+    font-size: 1.375rem;
+    margin-bottom: 4px;
+  }
+  .services__tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-1);
+  }
+  .services__item p {
+    margin-bottom: 0.9em;
   }
 
+  /* Our Story */
+  .our-story {
+    max-width: 44rem;
+    padding-block: var(--space-5);
+    text-align: center;
+  }
+  .our-story__eyebrow {
+    margin-block: 0.4em var(--space-2);
+  }
+  .our-story__body {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+  }
+
+  /* Wide banner */
+  .wide-banner {
+    aspect-ratio: 21 / 6;
+    overflow: hidden;
+  }
+  .wide-banner :global(.wide-banner__image) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Footer */
   .site-footer {
-    border-top: 1px solid var(--color-border);
-    padding-block: var(--space-4);
-    margin-top: var(--space-4);
+    background: oklch(28% 0.03 60);
+    color: oklch(92% 0.015 80);
+    padding: var(--space-5) 0 var(--space-2);
   }
   .site-footer__inner {
     display: grid;
@@ -301,10 +546,53 @@ const nextEvent = await sanityClient.fetch(`
   }
   @media (min-width: 700px) {
     .site-footer__inner {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1.3fr 1fr 1fr;
     }
   }
+  .site-footer__brand {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    color: oklch(92% 0.015 80);
+  }
   .site-footer p {
-    margin-top: 0.4em;
+    color: oklch(80% 0.015 80);
+  }
+  .site-footer__heading {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-brass);
+    margin-bottom: var(--space-1);
+  }
+  .site-footer__links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .site-footer__links a {
+    font-size: 0.875rem;
+    color: oklch(88% 0.015 80);
+    text-decoration: none;
+  }
+  .site-footer__links a:hover {
+    color: var(--color-brass);
+  }
+  .site-footer__contact {
+    font-size: 0.875rem;
+    line-height: 1.8;
+    color: oklch(88% 0.015 80);
+  }
+  .site-footer__bottom {
+    margin-top: var(--space-4);
+    padding-top: var(--space-2);
+    border-top: 1px solid oklch(40% 0.02 60);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    color: oklch(65% 0.015 75);
   }
 </style>

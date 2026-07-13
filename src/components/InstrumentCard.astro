@@ -19,8 +19,8 @@ const imageUrl = image ? urlFor(image).width(600).height(750).fit('crop').auto('
     {imageUrl && <Image src={imageUrl} alt={name} width={600} height={750} loading="lazy" />}
   </div>
   <div class="instrument-card__meta">
-    <span class="instrument-card__category">{categoryTitle}</span>
     <h3 class="instrument-card__name">{name}</h3>
+    <span class="instrument-card__category">{categoryTitle}</span>
     {price && <span class="instrument-card__price">€{price}</span>}
   </div>
 </a>
@@ -30,13 +30,15 @@ const imageUrl = image ? urlFor(image).width(600).height(750).fit('crop').auto('
     display: block;
     text-decoration: none;
     color: inherit;
+    background: var(--color-bg);
+    border-radius: 6px;
+    overflow: hidden;
   }
 
   .instrument-card__image {
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 4 / 3;
     overflow: hidden;
     background: var(--color-bg-raised);
-    border: 1px solid var(--color-border);
   }
 
   .instrument-card__image img {
@@ -52,10 +54,15 @@ const imageUrl = image ? urlFor(image).width(600).height(750).fit('crop').auto('
   }
 
   .instrument-card__meta {
-    padding-top: var(--space-2);
+    padding: 1.25rem;
     display: flex;
     flex-direction: column;
-    gap: 0.35em;
+    gap: 0.4em;
+  }
+
+  .instrument-card__name {
+    font-size: 1.125rem;
+    font-weight: 600;
   }
 
   .instrument-card__category {
@@ -63,17 +70,13 @@ const imageUrl = image ? urlFor(image).width(600).height(750).fit('crop').auto('
     font-size: 0.7rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--color-brass);
-  }
-
-  .instrument-card__name {
-    font-size: 1.15rem;
-    font-weight: 500;
+    color: var(--color-text-muted);
   }
 
   .instrument-card__price {
     font-family: var(--font-mono);
-    font-size: 0.9rem;
-    color: var(--color-text-muted);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--color-brass);
   }
 </style>

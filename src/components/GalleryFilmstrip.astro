@@ -1,0 +1,137 @@
+---
+import { Image } from 'astro:assets';
+import { urlFor } from '../lib/sanity';
+
+interface GalleryItem {
+  image: any;
+  caption?: string;
+}
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  items: GalleryItem[];
+  imgWidth: number;
+  imgHeight: number;
+  itemWidth?: string;
+  muted?: boolean;
+}
+
+const { eyebrow, title, items, imgWidth, imgHeight, itemWidth = '260px', muted = false } = Astro.props;
+---
+
+<section class="gallery-filmstrip" class:list={{ 'gallery-filmstrip--muted': muted }}>
+  <div class="container gallery-filmstrip__header">
+    <div>
+      <p class="eyebrow">{eyebrow}</p>
+      <h2>{title}</h2>
+    </div>
+    <div class="gallery-filmstrip__controls">
+      <button type="button" class="gallery-filmstrip__arrow" data-scroll="left" aria-label="Scroll left">←</button>
+      <button type="button" class="gallery-filmstrip__arrow" data-scroll="right" aria-label="Scroll right">→</button>
+    </div>
+  </div>
+  <div class="gallery-filmstrip__track" data-gallery-track>
+    {items.map((item) => (
+      <div class="gallery-filmstrip__item" style={`width: ${itemWidth}`}>
+        <Image
+          src={urlFor(item.image).width(imgWidth).height(imgHeight).fit('crop').auto('format').url()}
+          alt={item.caption || ''}
+          width={imgWidth}
+          height={imgHeight}
+          loading="lazy"
+        />
+      </div>
+    ))}
+  </div>
+</section>
+
+<script>
+  const filmstrips = document.querySelectorAll<HTMLElement>('.gallery-filmstrip');
+
+  filmstrips.forEach((filmstrip) => {
+    const track = filmstrip.querySelector<HTMLElement>('[data-gallery-track]');
+    if (!track) return;
+
+    filmstrip.querySelectorAll<HTMLButtonElement>('[data-scroll]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const direction = button.dataset.scroll === 'left' ? -1 : 1;
+        track.scrollBy({ left: direction * 440, behavior: 'smooth' });
+      });
+    });
+  });
+</script>
+
+<style>
+  .gallery-filmstrip {
+    background: var(--color-bg-raised);
+    padding-block: var(--space-4);
+  }
+
+  .gallery-filmstrip__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .gallery-filmstrip__header .eyebrow {
+    margin-bottom: 0.4em;
+  }
+
+  .gallery-filmstrip__header h2 {
+    font-size: clamp(1.4rem, 3vw, 1.75rem);
+  }
+
+  .gallery-filmstrip__controls {
+    display: flex;
+    gap: var(--space-1);
+    flex-shrink: 0;
+  }
+
+  .gallery-filmstrip__arrow {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--color-cream);
+    background: none;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0;
+    color: var(--color-cream);
+  }
+
+  .gallery-filmstrip__track {
+    display: flex;
+    gap: var(--space-2);
+    overflow-x: auto;
+    padding-inline: var(--space-3);
+    scroll-snap-type: x mandatory;
+    padding-bottom: var(--space-1);
+  }
+
+  @media (min-width: 640px) {
+    .gallery-filmstrip__track {
+      padding-inline: var(--space-4);
+    }
+  }
+
+  .gallery-filmstrip__item {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .gallery-filmstrip--muted .gallery-filmstrip__item {
+    filter: saturate(0.9);
+  }
+
+  .gallery-filmstrip__item :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+</style>

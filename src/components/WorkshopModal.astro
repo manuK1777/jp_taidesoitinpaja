@@ -1,0 +1,143 @@
+---
+interface WorkshopEvent {
+  title: string;
+  shortDescription?: string;
+  startDateTime?: string;
+  location?: string;
+}
+
+interface Props {
+  events: WorkshopEvent[];
+  triggerLabel?: string;
+}
+
+const { events, triggerLabel = 'See workshop dates →' } = Astro.props;
+
+const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+const formatDate = (value?: string) => (value ? dateFormatter.format(new Date(value)) : 'Date TBD');
+---
+
+<button type="button" class="workshop-modal-trigger" data-workshop-modal-trigger>{triggerLabel}</button>
+
+<dialog class="workshop-modal" data-workshop-modal>
+  <div class="workshop-modal__header">
+    <h3>Workshops &amp; Events</h3>
+    <button type="button" class="workshop-modal__close" data-workshop-modal-close aria-label="Close">×</button>
+  </div>
+  <div class="workshop-modal__grid">
+    {events.map((event) => (
+      <div class="workshop-modal__card">
+        <div class="workshop-modal__date">{formatDate(event.startDateTime)}</div>
+        <div class="workshop-modal__title">{event.title}</div>
+        {event.shortDescription && <p class="workshop-modal__desc">{event.shortDescription}</p>}
+      </div>
+    ))}
+  </div>
+</dialog>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.workshop-modal-trigger').forEach((trigger) => {
+    const dialog = trigger.nextElementSibling as HTMLDialogElement | null;
+    if (!dialog) return;
+
+    trigger.addEventListener('click', () => dialog.showModal());
+
+    dialog.querySelector('[data-workshop-modal-close]')?.addEventListener('click', () => dialog.close());
+
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+  });
+</script>
+
+<style>
+  .workshop-modal-trigger {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-cream);
+    border-bottom: 2px solid var(--color-brass);
+    cursor: pointer;
+  }
+
+  .workshop-modal {
+    border: none;
+    border-radius: 8px;
+    padding: 0;
+    max-width: 720px;
+    width: calc(100% - 48px);
+    max-height: 85vh;
+    background: var(--color-bg);
+    color: var(--color-cream);
+  }
+
+  .workshop-modal::backdrop {
+    background: oklch(15% 0.01 60 / 0.55);
+  }
+
+  .workshop-modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: var(--space-3) var(--space-3) 0;
+  }
+
+  .workshop-modal__header h3 {
+    font-size: 1.4rem;
+  }
+
+  .workshop-modal__close {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--color-cream);
+  }
+
+  .workshop-modal__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3) var(--space-3);
+  }
+
+  @media (min-width: 560px) {
+    .workshop-modal__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .workshop-modal__card {
+    background: var(--color-bg-raised);
+    border-radius: 6px;
+    padding: var(--space-2);
+  }
+
+  .workshop-modal__date {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-brass);
+    margin-bottom: 0.5em;
+  }
+
+  .workshop-modal__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin-bottom: 0.5em;
+  }
+
+  .workshop-modal__desc {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+</style>
