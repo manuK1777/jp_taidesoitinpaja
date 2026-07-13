@@ -8,7 +8,8 @@ import { sanityClient } from '../lib/sanity';
 
 // Static assets — place these files in src/assets/ (see setup notes below)
 import heroImage from '../assets/home-hero.jpg';
-import ourStoryImage from '../assets/home-our-story.jpg';
+import heroImage2 from '../assets/home-our-story.jpg';
+import workshopPoster from '../assets/luthier-workshop.png';
 import logoIcon from '../assets/logo-icon.png';
 import { Image } from 'astro:assets';
 
@@ -23,24 +24,24 @@ const navItems = [
 
 const services = [
   {
-    title: 'Handcrafted Instruments',
+    title: 'Artesanal Sound',
     tag: 'Crafted with care',
-    body: 'Explore the selection of handcrafted folk instruments at Taidesoitinpaja. Each item is carefully made in our luthier workshop, reflecting outstanding artistry and quality — igils, jouhikkos, air-tunable drums, and more.',
+    body: 'Explore the selection of handcrafted folk instruments at Taidesoitinpaja. Each item is carefully made in our luthier workshop, reflecting outstanding artistry and quality. Take a look at our stunning range of igils, bowed lyres, air tunable drums and other folk instruments for sale. Every piece combines tradition and innovation, expertly crafted with dedication and skill.',
   },
   {
     title: 'Customized Design',
     tag: 'Personal touch',
-    body: 'Transform your instrument with a personal touch. We partner with you to create a distinctive piece that showcases your style and sound, reflecting your unique identity.',
+    body: 'Transform your instrument with a personal touch by customizing it to suit your preferences. At Taidesoitinpaja, we partner with you to create a distinctive piece that showcases your style and sound. Let your creativity shine through our customization service, allowing your instrument to reflect your unique identity and resonate with your spirit.',
   },
   {
     title: 'Repair Service',
     tag: 'Restore & revive',
-    body: 'Trust Taidesoitinpaja for instrument repairs. We specialize in restoring and reviving instruments to their former glory — let us breathe new life into your beloved instrument.',
+    body: 'Trust Taidesoitinpaja for instrument repairs. we are specialized in restoring and reviving your instruments to their former glory. Let us breathe new life into your beloved instrument.',
   },
   {
     title: 'Workshops & Events',
     tag: 'Join our interactive courses',
-    body: 'Immerse yourself in the art of crafting instruments. Learn drum-making, build yourself a jouhikko, or try throat singing — experience the joy of creating your own musical masterpiece.',
+    body: 'Immerse yourself in the art of crafting instruments by participating in our engaging workshops. Learn the intricate process of drum making, build yourself a jouhikko (bowed lyre) or learn throat singing. Experience the joy of creating your own musical masterpiece.',
   },
 ];
 
@@ -73,11 +74,7 @@ const upcomingWorkshops = await sanityClient.fetch(`
   <header class="site-header">
     <div class="container site-header__inner">
       <a href="/" class="site-header__brand">
-        <Image src={logoIcon} alt="Taidesoitinpaja" width={34} height={34} class="site-header__logo" />
-        <span class="site-header__brand-text">
-          <span class="site-header__name">Taidesoitinpaja</span>
-          <span class="site-header__tagline">J-P Lilja, Luthier</span>
-        </span>
+        <Image src={logoIcon} alt="Taidesoitinpaja" width={170} class="site-header__logo" />
       </a>
 
       <nav class="site-header__nav" id="site-nav">
@@ -85,28 +82,6 @@ const upcomingWorkshops = await sanityClient.fetch(`
           <a href={item.href}>{item.label}</a>
         ))}
       </nav>
-
-      <div class="site-header__icons">
-        <a href="/account" class="site-header__icon-link" aria-label="Account">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="8" r="4" />
-            <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7" />
-          </svg>
-          <span class="site-header__icon-label">Log In</span>
-        </a>
-        <a href="/cart" class="site-header__icon-link" aria-label="Cart">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 8h16l-1.5 11a2 2 0 0 1-2 1.8H7.5a2 2 0 0 1-2-1.8L4 8Z" />
-            <path d="M8 8V6a4 4 0 0 1 8 0v2" />
-          </svg>
-          <span>0</span>
-        </a>
-        <button type="button" class="site-header__menu-toggle" id="site-nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle menu">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 6h18M3 12h18M3 18h18" />
-          </svg>
-        </button>
-      </div>
     </div>
   </header>
 
@@ -129,10 +104,10 @@ const upcomingWorkshops = await sanityClient.fetch(`
 
   <section class="hero container">
     <div class="hero__text">
-      <p class="eyebrow">Karjalohja, Finland</p>
-      <h1>Instruments carved<br />from patience and wood.</h1>
-      <p class="hero__sub">Handcrafted igils, jouhikkos, doshpuluurs, and frame drums — each one built by hand, one at a time.</p>
-      <a href="/instruments" class="btn btn--solid">See the instruments</a>
+      <h1>Unveiling<br/>musical<br/>magic</h1>
+      <p class="hero__sub">Handcrafted Unique Instruments
+</p>
+      <a href="/instruments" class="btn btn--solid">Learn More</a>
     </div>
     <div class="hero__image-wrap">
       <Image src={heroImage} alt="J-P Lilja's luthier workshop" class="hero__image" />
@@ -144,8 +119,7 @@ const upcomingWorkshops = await sanityClient.fetch(`
       <div class="instruments-band__header">
         <div>
           <p class="eyebrow">Featured</p>
-          <h2>From the workshop</h2>
-          <p class="instruments-band__sub">Igils, jouhikkos, doshpuluurs, and hand-tuned frame drums — carved one at a time.</p>
+          <h2>Folk Instruments for Sale</h2>
         </div>
         <a href="/instruments" class="instruments-band__cta">View All Instruments →</a>
       </div>
@@ -169,7 +143,17 @@ const upcomingWorkshops = await sanityClient.fetch(`
     <h2 class="services__heading">Luthier Workshop Services</h2>
     <div class="services__layout">
       <div class="services__image-wrap">
-        <Image src={ourStoryImage} alt="Inside J-P Lilja's luthier workshop" class="services__image" />
+        <video
+          class="services__image"
+          src="/video/luthier-workshop-optimized.mp4"
+          poster={workshopPoster.src}
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          aria-label="Inside J-P Lilja's luthier workshop"
+        ></video>
       </div>
       <div class="services__list">
         {services.map((service) => (
@@ -188,8 +172,7 @@ const upcomingWorkshops = await sanityClient.fetch(`
 
   {homePage?.previousWorks?.length > 0 && (
     <GalleryFilmstrip
-      eyebrow="Previous Works"
-      title="Instruments that found a home"
+      title="Previous works"
       items={homePage.previousWorks}
       imgWidth={500}
       imgHeight={650}
@@ -199,7 +182,6 @@ const upcomingWorkshops = await sanityClient.fetch(`
 
   {homePage?.workInProgress?.length > 0 && (
     <GalleryFilmstrip
-      eyebrow="Work in Progress"
       title="Work in Process Gallery"
       items={homePage.workInProgress}
       imgWidth={360}
@@ -218,7 +200,7 @@ const upcomingWorkshops = await sanityClient.fetch(`
   </section>
 
   <div class="wide-banner">
-    <Image src={heroImage} alt="J-P Lilja at work in the workshop" class="wide-banner__image" />
+    <Image src={heroImage2} alt="J-P Lilja at work in the workshop" class="wide-banner__image" />
   </div>
 
   <footer class="site-footer">
@@ -278,7 +260,8 @@ const upcomingWorkshops = await sanityClient.fetch(`
     flex-shrink: 0;
   }
   .site-header__logo {
-    border-radius: 50%;
+    height: auto;
+    display: block;
   }
   .site-header__brand-text {
     display: flex;
@@ -399,10 +382,11 @@ const upcomingWorkshops = await sanityClient.fetch(`
     margin-block: var(--space-2) var(--space-3);
     font-size: 1.1rem;
   }
+
   .hero__image-wrap {
     border-radius: var(--radius);
     overflow: hidden;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 16;
   }
   .hero__image-wrap :global(.hero__image) {
     width: 100%;

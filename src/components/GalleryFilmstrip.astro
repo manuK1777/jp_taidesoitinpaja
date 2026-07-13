@@ -8,7 +8,6 @@ interface GalleryItem {
 }
 
 interface Props {
-  eyebrow: string;
   title: string;
   items: GalleryItem[];
   imgWidth: number;
@@ -17,14 +16,13 @@ interface Props {
   muted?: boolean;
 }
 
-const { eyebrow, title, items, imgWidth, imgHeight, itemWidth = '260px', muted = false } = Astro.props;
+const { title, items, imgWidth, imgHeight, itemWidth = '260px', muted = false } = Astro.props;
 ---
 
 <section class="gallery-filmstrip" class:list={{ 'gallery-filmstrip--muted': muted }}>
   <div class="container gallery-filmstrip__header">
     <div>
-      <p class="eyebrow">{eyebrow}</p>
-      <h2>{title}</h2>
+    <h2>{title}</h2>
     </div>
     <div class="gallery-filmstrip__controls">
       <button type="button" class="gallery-filmstrip__arrow" data-scroll="left" aria-label="Scroll left">←</button>
