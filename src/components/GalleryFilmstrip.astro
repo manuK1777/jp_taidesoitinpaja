@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import { urlFor } from '../lib/sanity';
 import WoodArrowButton from './WoodArrowButton.astro';
+import WoodenScrollBar from './WoodenScrollBar.astro';
 
 interface GalleryItem {
   image: any;
@@ -48,12 +49,13 @@ const galleryItems = items.map((item, index) => ({
       />
     </div>
   </div>
-  <div class="gallery-filmstrip__track" data-gallery-track>
+  <div class="gallery-filmstrip__track" data-gallery-track id={`${galleryId}-track`}>
     {galleryItems.map((item) => (
       <button
         type="button"
         class="gallery-filmstrip__item"
         style={`width: ${itemWidth}`}
+        data-lightbox-group={galleryId}
         data-lightbox-src={item.lightboxSrc}
         data-lightbox-alt={item.alt}
         data-lightbox-caption={item.caption}
@@ -68,15 +70,9 @@ const galleryItems = items.map((item, index) => ({
       </button>
     ))}
   </div>
-  <dialog class="gallery-lightbox" data-gallery-lightbox aria-label={`${title} lightbox`}>
-    <button type="button" class="gallery-lightbox__close" data-lightbox-close aria-label="Close lightbox">×</button>
-    <button type="button" class="gallery-lightbox__arrow gallery-lightbox__arrow--left" data-lightbox-navigate="previous" aria-label="Previous image">←</button>
-    <figure class="gallery-lightbox__figure">
-      <img class="gallery-lightbox__image" data-lightbox-image alt="" />
-      <figcaption class="gallery-lightbox__caption" data-lightbox-caption></figcaption>
-    </figure>
-    <button type="button" class="gallery-lightbox__arrow gallery-lightbox__arrow--right" data-lightbox-navigate="next" aria-label="Next image">→</button>
-  </dialog>
+  <div class="gallery-filmstrip__scrollbar">
+    <WoodenScrollBar for={`#${galleryId}-track`} />
+  </div>
 </section>
 
 <script>
@@ -84,57 +80,7 @@ const galleryItems = items.map((item, index) => ({
 
   filmstrips.forEach((filmstrip) => {
     const track = filmstrip.querySelector<HTMLElement>('[data-gallery-track]');
-    const lightbox = filmstrip.querySelector<HTMLDialogElement>('[data-gallery-lightbox]');
-    const lightboxImage = lightbox?.querySelector<HTMLImageElement>('[data-lightbox-image]');
-    const lightboxCaption = lightbox?.querySelector<HTMLElement>('[data-lightbox-caption]');
-    if (!track || !lightbox || !lightboxImage || !lightboxCaption) return;
-
-    const galleryItems = Array.from(track.querySelectorAll<HTMLButtonElement>('.gallery-filmstrip__item'));
-    let activeIndex = 0;
-
-    const showLightbox = (index: number) => {
-      const item = galleryItems[index];
-      if (!item) return;
-
-      activeIndex = index;
-      const nextSource = item.dataset.lightboxSrc || '';
-      if (lightboxImage.src !== nextSource) {
-        lightbox.classList.add('is-loading');
-        lightboxImage.src = nextSource;
-      }
-      lightboxImage.alt = item.dataset.lightboxAlt || '';
-      lightboxCaption.textContent = item.dataset.lightboxCaption || `Image ${index + 1}`;
-      if (!lightbox.open) lightbox.showModal();
-    };
-
-    lightboxImage.addEventListener('load', () => {
-      lightbox.classList.remove('is-loading');
-    });
-
-    lightboxImage.addEventListener('error', () => {
-      lightbox.classList.remove('is-loading');
-    });
-
-    galleryItems.forEach((item, index) => {
-      item.addEventListener('click', () => {
-        showLightbox(index);
-      });
-    });
-
-    lightbox.querySelector<HTMLButtonElement>('[data-lightbox-close]')?.addEventListener('click', () => {
-      lightbox.close();
-    });
-
-    lightbox.querySelectorAll<HTMLButtonElement>('[data-lightbox-navigate]').forEach((button) => {
-      button.addEventListener('click', () => {
-        const direction = button.dataset.lightboxNavigate === 'previous' ? -1 : 1;
-        showLightbox((activeIndex + direction + galleryItems.length) % galleryItems.length);
-      });
-    });
-
-    lightbox.addEventListener('click', (event) => {
-      if (event.target === lightbox) lightbox.close();
-    });
+    if (!track) return;
 
     filmstrip.querySelectorAll<HTMLButtonElement>('[data-scroll]').forEach((button) => {
       button.addEventListener('click', () => {
@@ -217,92 +163,6 @@ const galleryItems = items.map((item, index) => ({
     outline-offset: 3px;
   }
 
-  .gallery-lightbox {
-    width: min(92vw, 80rem);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius);
-    background: var(--color-bg-raised);
-    color: var(--color-cream);
-    padding: var(--space-3);
-  }
-
-  .gallery-lightbox::backdrop {
-    background: rgb(0 0 0 / 75%);
-  }
-
-  .gallery-lightbox__figure {
-    display: grid;
-    justify-items: center;
-    gap: var(--space-2);
-    margin: 0;
-  }
-
-  .gallery-lightbox__image {
-    display: block;
-    max-width: 100%;
-    max-height: 72vh;
-    object-fit: contain;
-    opacity: 1;
-    transition: opacity 150ms ease;
-  }
-
-  .gallery-lightbox.is-loading .gallery-lightbox__image {
-    opacity: 0;
-  }
-
-  .gallery-lightbox__caption {
-    color: var(--color-text-muted);
-    text-align: center;
-  }
-
-  .gallery-lightbox__close,
-  .gallery-lightbox__arrow {
-    border: 0;
-    background: rgb(0 0 0 / 45%);
-    color: var(--color-cream);
-    cursor: pointer;
-  }
-
-  .gallery-lightbox__close {
-    position: absolute;
-    top: var(--space-2);
-    right: var(--space-2);
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    font-size: 1.75rem;
-    line-height: 1;
-  }
-
-  .gallery-lightbox__arrow {
-    position: absolute;
-    top: 50%;
-    width: 2.75rem;
-    height: 2.75rem;
-    border-radius: 50%;
-    font-size: 1.5rem;
-    transform: translateY(-50%);
-  }
-
-  .gallery-lightbox__arrow--left {
-    left: var(--space-2);
-  }
-
-  .gallery-lightbox__arrow--right {
-    right: var(--space-2);
-  }
-
-  .gallery-lightbox__close:hover,
-  .gallery-lightbox__arrow:hover {
-    background: rgb(0 0 0 / 70%);
-  }
-
-  .gallery-lightbox__close:focus-visible,
-  .gallery-lightbox__arrow:focus-visible {
-    outline: 2px solid var(--color-cream);
-    outline-offset: 3px;
-  }
-
   .gallery-filmstrip--muted .gallery-filmstrip__item {
     filter: saturate(0.9);
   }
@@ -312,5 +172,17 @@ const galleryItems = items.map((item, index) => ({
     height: 100%;
     object-fit: cover;
     display: block;
+  }
+
+  .gallery-filmstrip__scrollbar {
+    max-width: 80%;
+    margin: var(--space-1) auto 0;
+    padding-inline: var(--space-3);
+  }
+
+  @media (min-width: 640px) {
+    .gallery-filmstrip__scrollbar {
+      padding-inline: var(--space-4);
+    }
   }
 </style>

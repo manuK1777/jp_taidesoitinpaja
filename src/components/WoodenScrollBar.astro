@@ -1,0 +1,135 @@
+---
+// Custom scrollbar for a horizontally-scrollable element.
+// Point it at the element it controls via the `for` prop (a CSS selector,
+// e.g. an id like "#my-track"). The thumb tracks scroll position/size and
+// can be dragged to scroll the target.
+interface Props {
+  for: string;
+}
+
+const { for: target } = Astro.props;
+---
+
+<div class="wood-scrollbar" data-wood-scrollbar data-scrollbar-target={target}>
+  <div class="wood-scrollbar-track">
+    <div class="wood-scrollbar-thumb" role="scrollbar" aria-orientation="horizontal" tabindex="0"></div>
+  </div>
+</div>
+
+<script>
+  function initScrollbars() {
+    const bars = document.querySelectorAll<HTMLElement>('[data-wood-scrollbar]');
+
+    bars.forEach((bar) => {
+      const targetSelector = bar.dataset.scrollbarTarget;
+      const target = targetSelector ? document.querySelector<HTMLElement>(targetSelector) : null;
+      const thumb = bar.querySelector<HTMLElement>('.wood-scrollbar-thumb');
+      const track = bar.querySelector<HTMLElement>('.wood-scrollbar-track');
+      if (!target || !thumb || !track) return;
+
+      const update = () => {
+        const { scrollWidth, clientWidth, scrollLeft } = target;
+        if (scrollWidth <= clientWidth) {
+          bar.hidden = true;
+          return;
+        }
+        bar.hidden = false;
+
+        const widthPct = (clientWidth / scrollWidth) * 100;
+        const maxScroll = scrollWidth - clientWidth;
+        const leftPct = (scrollLeft / maxScroll) * (100 - widthPct);
+
+        thumb.style.width = `${widthPct}%`;
+        thumb.style.left = `${leftPct}%`;
+      };
+
+      let ticking = false;
+      const requestUpdate = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          update();
+          ticking = false;
+        });
+      };
+
+      target.addEventListener('scroll', requestUpdate);
+      window.addEventListener('resize', requestUpdate);
+      new ResizeObserver(requestUpdate).observe(target);
+
+      let dragging = false;
+      let dragStartX = 0;
+      let startScrollLeft = 0;
+
+      const onPointerMove = (e: PointerEvent) => {
+        if (!dragging) return;
+        const scrollableTrackWidth = track.clientWidth - thumb.clientWidth;
+        const maxScroll = target.scrollWidth - target.clientWidth;
+        const deltaX = e.clientX - dragStartX;
+        const scrollDelta = scrollableTrackWidth > 0 ? (deltaX / scrollableTrackWidth) * maxScroll : 0;
+        target.scrollLeft = startScrollLeft + scrollDelta;
+      };
+
+      const onPointerUp = () => {
+        dragging = false;
+        window.removeEventListener('pointermove', onPointerMove);
+        window.removeEventListener('pointerup', onPointerUp);
+      };
+
+      thumb.addEventListener('pointerdown', (e) => {
+        dragging = true;
+        dragStartX = e.clientX;
+        startScrollLeft = target.scrollLeft;
+        window.addEventListener('pointermove', onPointerMove);
+        window.addEventListener('pointerup', onPointerUp);
+      });
+
+      thumb.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+        e.preventDefault();
+        const step = target.clientWidth * 0.2;
+        target.scrollBy({ left: e.key === 'ArrowLeft' ? -step : step, behavior: 'smooth' });
+      });
+
+      update();
+    });
+  }
+
+  initScrollbars();
+</script>
+
+<style>
+  .wood-scrollbar-track {
+    width: 100%;
+    height: 14px;
+    border-radius: 7px;
+    background: #a9855f; /* oklch(64% 0.05 62) */
+    box-shadow:
+      inset 0 2px 5px rgba(90, 60, 30, 0.55),
+      inset 0 -1px 1px rgba(230, 210, 180, 0.3);
+    position: relative;
+  }
+
+  .wood-scrollbar-thumb {
+    position: absolute;
+    top: 50%;
+    height: 26px;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, #d9b98a, #8a5f3a 70%);
+    box-shadow:
+      0 3px 5px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 240, 220, 0.5);
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .wood-scrollbar-thumb:active {
+    cursor: grabbing;
+  }
+
+  .wood-scrollbar-thumb:focus-visible {
+    outline: 2px solid var(--color-cream);
+    outline-offset: 2px;
+  }
+</style>

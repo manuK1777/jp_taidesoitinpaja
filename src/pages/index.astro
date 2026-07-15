@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import InstrumentCard from '../components/InstrumentCard.astro';
 import GalleryFilmstrip from '../components/GalleryFilmstrip.astro';
+import Lightbox from '../components/Lightbox.astro';
 import WorkshopModal from '../components/WorkshopModal.astro';
 import { sanityClient } from '../lib/sanity';
 
@@ -231,6 +232,7 @@ const upcomingWorkshops = await sanityClient.fetch(`
       © {new Date().getFullYear()} Taidesoitinpaja. All rights reserved.
     </div>
   </footer>
+  <Lightbox />
 </Layout>
 
 <style>
