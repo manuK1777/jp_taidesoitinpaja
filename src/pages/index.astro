@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import CarvedDivider from '../components/CarvedDivider.astro';
 import InstrumentCard from '../components/InstrumentCard.astro';
 import GalleryFilmstrip from '../components/GalleryFilmstrip.astro';
 import WorkshopModal from '../components/WorkshopModal.astro';
@@ -137,8 +136,6 @@ const upcomingWorkshops = await sanityClient.fetch(`
     </div>
   </section>
 
-  <CarvedDivider />
-
   <section class="services container reveal">
     <h2 class="services__heading">Luthier Workshop Services</h2>
     <div class="services__layout">
@@ -191,12 +188,14 @@ const upcomingWorkshops = await sanityClient.fetch(`
     />
   )}
 
-  <CarvedDivider flip />
-
   <section class="our-story container reveal">
     <h2>Our Story</h2>
     <p class="eyebrow our-story__eyebrow">Crafting Musical Legacies</p>
-    <p class="our-story__body">Taidesoitinpaja's journey is rooted in a deep passion for preserving the rich essence of folk music through exquisitely handcrafted instruments. Each creation embodies a unique story of heritage, quality, and unwavering dedication to the art of instrument making. We invite you to embark on this melodic voyage with us, where exceptional craftsmanship intertwines with boundless creativity, paving the way for a harmonious musical future.</p>
+    <p class="our-story__body">Taidesoitinpaja's journey is rooted in a deep passion 
+      for preserving the rich essence of folk music through exquisitely handcrafted 
+      instruments. Each creation embodies a unique story of heritage, quality, and 
+      unwavering dedication to the art of instrument making. We invite you to embark 
+      on this melodic voyage with us, where exceptional craftsmanship intertwines with boundless creativity, paving the way for a harmonious musical future.</p>
   </section>
 
   <div class="wide-banner">
@@ -445,30 +444,28 @@ const upcomingWorkshops = await sanityClient.fetch(`
   .services__layout {
     display: grid;
     gap: var(--space-4);
-    align-items: start;
-  }
-  @media (min-width: 800px) {
-    .services__layout {
-      grid-template-columns: 1fr 1fr;
-    }
   }
   .services__image-wrap {
+    width: min(100%, 52rem);
+    margin-inline: auto;
     border-radius: var(--radius);
     overflow: hidden;
     aspect-ratio: 4 / 3;
-    position: sticky;
-    top: 100px;
   }
   .services__image-wrap :global(.services__image) {
-    width: 100%;
-    height: 100%;
+    width: 90%;
+    height: 90%;
     object-fit: cover;
     display: block;
   }
   .services__list {
-    display: flex;
-    flex-direction: column;
+    display: grid;
     gap: var(--space-4);
+  }
+  @media (min-width: 800px) {
+    .services__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
   .services__item {
     border-bottom: 1px solid var(--color-border);
