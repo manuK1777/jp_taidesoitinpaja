@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import { urlFor } from '../lib/sanity';
+import WoodArrowButton from './WoodArrowButton.astro';
 
 interface GalleryItem {
   image: any;
@@ -17,6 +18,14 @@ interface Props {
 }
 
 const { title, items, imgWidth, imgHeight, itemWidth = '260px', muted = false } = Astro.props;
+const galleryId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const galleryItems = items.map((item, index) => ({
+  ...item,
+  alt: item.caption || '',
+  caption: item.caption || `Image ${index + 1}`,
+  src: urlFor(item.image).width(imgWidth).height(imgHeight).fit('crop').auto('format').url(),
+  lightboxSrc: urlFor(item.image).width(imgWidth * 3).height(imgHeight * 3).fit('crop').auto('format').url(),
+}));
 ---
 
 <section class="gallery-filmstrip" class:list={{ 'gallery-filmstrip--muted': muted }}>
@@ -25,23 +34,49 @@ const { title, items, imgWidth, imgHeight, itemWidth = '260px', muted = false } 
     <h2>{title}</h2>
     </div>
     <div class="gallery-filmstrip__controls">
-      <button type="button" class="gallery-filmstrip__arrow" data-scroll="left" aria-label="Scroll left">←</button>
-      <button type="button" class="gallery-filmstrip__arrow" data-scroll="right" aria-label="Scroll right">→</button>
+      <WoodArrowButton
+        direction="left"
+        ariaLabel="Scroll left"
+        gradientId={`${galleryId}-wood-gradient-left`}
+        scrollDirection="left"
+      />
+      <WoodArrowButton
+        direction="right"
+        ariaLabel="Scroll right"
+        gradientId={`${galleryId}-wood-gradient-right`}
+        scrollDirection="right"
+      />
     </div>
   </div>
   <div class="gallery-filmstrip__track" data-gallery-track>
-    {items.map((item) => (
-      <div class="gallery-filmstrip__item" style={`width: ${itemWidth}`}>
+    {galleryItems.map((item) => (
+      <button
+        type="button"
+        class="gallery-filmstrip__item"
+        style={`width: ${itemWidth}`}
+        data-lightbox-src={item.lightboxSrc}
+        data-lightbox-alt={item.alt}
+        data-lightbox-caption={item.caption}
+      >
         <Image
-          src={urlFor(item.image).width(imgWidth).height(imgHeight).fit('crop').auto('format').url()}
-          alt={item.caption || ''}
+          src={item.src}
+          alt={item.alt}
           width={imgWidth}
           height={imgHeight}
           loading="lazy"
         />
-      </div>
+      </button>
     ))}
   </div>
+  <dialog class="gallery-lightbox" data-gallery-lightbox aria-label={`${title} lightbox`}>
+    <button type="button" class="gallery-lightbox__close" data-lightbox-close aria-label="Close lightbox">×</button>
+    <button type="button" class="gallery-lightbox__arrow gallery-lightbox__arrow--left" data-lightbox-navigate="previous" aria-label="Previous image">←</button>
+    <figure class="gallery-lightbox__figure">
+      <img class="gallery-lightbox__image" data-lightbox-image alt="" />
+      <figcaption class="gallery-lightbox__caption" data-lightbox-caption></figcaption>
+    </figure>
+    <button type="button" class="gallery-lightbox__arrow gallery-lightbox__arrow--right" data-lightbox-navigate="next" aria-label="Next image">→</button>
+  </dialog>
 </section>
 
 <script>
@@ -49,7 +84,57 @@ const { title, items, imgWidth, imgHeight, itemWidth = '260px', muted = false } 
 
   filmstrips.forEach((filmstrip) => {
     const track = filmstrip.querySelector<HTMLElement>('[data-gallery-track]');
-    if (!track) return;
+    const lightbox = filmstrip.querySelector<HTMLDialogElement>('[data-gallery-lightbox]');
+    const lightboxImage = lightbox?.querySelector<HTMLImageElement>('[data-lightbox-image]');
+    const lightboxCaption = lightbox?.querySelector<HTMLElement>('[data-lightbox-caption]');
+    if (!track || !lightbox || !lightboxImage || !lightboxCaption) return;
+
+    const galleryItems = Array.from(track.querySelectorAll<HTMLButtonElement>('.gallery-filmstrip__item'));
+    let activeIndex = 0;
+
+    const showLightbox = (index: number) => {
+      const item = galleryItems[index];
+      if (!item) return;
+
+      activeIndex = index;
+      const nextSource = item.dataset.lightboxSrc || '';
+      if (lightboxImage.src !== nextSource) {
+        lightbox.classList.add('is-loading');
+        lightboxImage.src = nextSource;
+      }
+      lightboxImage.alt = item.dataset.lightboxAlt || '';
+      lightboxCaption.textContent = item.dataset.lightboxCaption || `Image ${index + 1}`;
+      if (!lightbox.open) lightbox.showModal();
+    };
+
+    lightboxImage.addEventListener('load', () => {
+      lightbox.classList.remove('is-loading');
+    });
+
+    lightboxImage.addEventListener('error', () => {
+      lightbox.classList.remove('is-loading');
+    });
+
+    galleryItems.forEach((item, index) => {
+      item.addEventListener('click', () => {
+        showLightbox(index);
+      });
+    });
+
+    lightbox.querySelector<HTMLButtonElement>('[data-lightbox-close]')?.addEventListener('click', () => {
+      lightbox.close();
+    });
+
+    lightbox.querySelectorAll<HTMLButtonElement>('[data-lightbox-navigate]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const direction = button.dataset.lightboxNavigate === 'previous' ? -1 : 1;
+        showLightbox((activeIndex + direction + galleryItems.length) % galleryItems.length);
+      });
+    });
+
+    lightbox.addEventListener('click', (event) => {
+      if (event.target === lightbox) lightbox.close();
+    });
 
     filmstrip.querySelectorAll<HTMLButtonElement>('[data-scroll]').forEach((button) => {
       button.addEventListener('click', () => {
@@ -88,27 +173,20 @@ const { title, items, imgWidth, imgHeight, itemWidth = '260px', muted = false } 
     flex-shrink: 0;
   }
 
-  .gallery-filmstrip__arrow {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1px solid var(--color-cream);
-    background: none;
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 0;
-    color: var(--color-cream);
-  }
-
   .gallery-filmstrip__track {
     max-width: 80%;
     margin-inline: auto;
     display: flex;
     gap: var(--space-2);
     overflow-x: auto;
+    scrollbar-width: none;
     padding-inline: var(--space-3);
     scroll-snap-type: x mandatory;
     padding-bottom: var(--space-1);
+  }
+
+  .gallery-filmstrip__track::-webkit-scrollbar {
+    display: none;
   }
 
   @media (min-width: 640px) {
@@ -120,8 +198,109 @@ const { title, items, imgWidth, imgHeight, itemWidth = '260px', muted = false } 
   .gallery-filmstrip__item {
     flex: 0 0 auto;
     scroll-snap-align: start;
+    border: 0;
     border-radius: 6px;
+    background: none;
+    padding: 0;
     overflow: hidden;
+    cursor: pointer;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+
+  .gallery-filmstrip__item:hover {
+    transform: scale(1.04);
+    box-shadow: 0 8px 20px rgb(0 0 0 / 20%);
+  }
+
+  .gallery-filmstrip__item:focus-visible {
+    outline: 2px solid var(--color-cream);
+    outline-offset: 3px;
+  }
+
+  .gallery-lightbox {
+    width: min(92vw, 80rem);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-bg-raised);
+    color: var(--color-cream);
+    padding: var(--space-3);
+  }
+
+  .gallery-lightbox::backdrop {
+    background: rgb(0 0 0 / 75%);
+  }
+
+  .gallery-lightbox__figure {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .gallery-lightbox__image {
+    display: block;
+    max-width: 100%;
+    max-height: 72vh;
+    object-fit: contain;
+    opacity: 1;
+    transition: opacity 150ms ease;
+  }
+
+  .gallery-lightbox.is-loading .gallery-lightbox__image {
+    opacity: 0;
+  }
+
+  .gallery-lightbox__caption {
+    color: var(--color-text-muted);
+    text-align: center;
+  }
+
+  .gallery-lightbox__close,
+  .gallery-lightbox__arrow {
+    border: 0;
+    background: rgb(0 0 0 / 45%);
+    color: var(--color-cream);
+    cursor: pointer;
+  }
+
+  .gallery-lightbox__close {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    font-size: 1.75rem;
+    line-height: 1;
+  }
+
+  .gallery-lightbox__arrow {
+    position: absolute;
+    top: 50%;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    transform: translateY(-50%);
+  }
+
+  .gallery-lightbox__arrow--left {
+    left: var(--space-2);
+  }
+
+  .gallery-lightbox__arrow--right {
+    right: var(--space-2);
+  }
+
+  .gallery-lightbox__close:hover,
+  .gallery-lightbox__arrow:hover {
+    background: rgb(0 0 0 / 70%);
+  }
+
+  .gallery-lightbox__close:focus-visible,
+  .gallery-lightbox__arrow:focus-visible {
+    outline: 2px solid var(--color-cream);
+    outline-offset: 3px;
   }
 
   .gallery-filmstrip--muted .gallery-filmstrip__item {
