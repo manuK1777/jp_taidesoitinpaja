@@ -9,7 +9,7 @@
 
 :root {
   /* Color */
-  --color-bg: oklch(97% 0.015 85);          /* light birch-cream page bg */
+  --color-bg: oklch(0.96 0.05 85.26);       /* light birch-cream page bg */
   --color-bg-raised: oklch(92% 0.03 80);    /* shaded panel/section band */
   --color-cream: oklch(24% 0.03 60);        /* primary ink — warm near-black */
   --color-walnut: oklch(45% 0.02 70);       /* walnut brown */
@@ -63,7 +63,9 @@ html {
 
 body {
   margin: 0;
-  background: var(--color-bg);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E"),
+    var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
   font-size: 1.0625rem;
@@ -98,7 +100,7 @@ a {
   font-size: 0.75rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-brass);
+  color: oklch(0.37 0.14 146.82);
 }
 
 .container {
