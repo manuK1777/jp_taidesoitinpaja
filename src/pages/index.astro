@@ -64,8 +64,7 @@ const upcomingWorkshops = await sanityClient.fetch(`
   <section class="hero container">
     <div class="hero__text">
       <h1>Unveiling<br/>musical<br/>magic</h1>
-      <p class="hero__sub">Handcrafted Unique Instruments
-</p>
+      <p class="hero__sub">Handcrafted Unique Instruments</p>
       <a href="/instruments" class="btn btn--solid">Learn More</a>
     </div>
     <div class="hero__image-wrap">
@@ -176,6 +175,11 @@ const upcomingWorkshops = await sanityClient.fetch(`
     gap: var(--space-4);
     align-items: center;
     padding-block: var(--space-5) var(--space-5);
+  }
+  @media (max-width: 899px) {
+    .hero__text {
+      text-align: center;
+    }
   }
   @media (min-width: 900px) {
     .hero {
