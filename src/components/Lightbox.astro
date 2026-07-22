@@ -202,8 +202,18 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
     position: relative;
   }
 
+  .lightbox__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 35%, rgb(12 9 6 / 55%) 100%);
+  }
+
   :global(.lightbox__close) {
     position: absolute;
+    z-index: 3;
     top: var(--space-1);
     right: var(--space-1);
   }
@@ -211,7 +221,7 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
   .lightbox__nav {
     position: absolute;
     top: 50%;
-    z-index: 1;
+    z-index: 2;
     transform: translateY(-50%);
   }
 
