@@ -1,0 +1,106 @@
+---
+const navItems = [
+  { label: 'Home', href: '/' },
+  { label: 'Instruments', href: '/instruments' },
+  { label: 'Repair & Maintenance', href: '/repair-maintenance' },
+  { label: 'Workshops & Events', href: '/workshops-events' },
+  { label: 'Our Story', href: '/our-story' },
+  { label: 'Contact', href: '/contact' },
+];
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <div>
+      <div class="site-footer__brand">Taidesoitinpaja</div>
+      <p>Handcrafted folk instruments from a one-person luthier workshop in Finland.</p>
+    </div>
+    <div>
+      <div class="site-footer__heading">Explore</div>
+      <div class="site-footer__links">
+        {navItems.map((item) => (
+          <a href={item.href}>{item.label}</a>
+        ))}
+      </div>
+    </div>
+    <div>
+      <div class="site-footer__heading">Contact</div>
+      <p class="site-footer__contact">
+        Taidesoitinpaja<br />
+        J-P Lilja<br />
+        Lahdenperä 142, 09120 Karjalohja, Finland<br /><br />
+        +358 40 575 5403<br />
+        taidesoitinpaja@gmail.com
+      </p>
+    </div>
+  </div>
+  <div class="container site-footer__bottom">
+    © {new Date().getFullYear()} Taidesoitinpaja. All rights reserved.
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background:
+      linear-gradient(rgb(36 27 20 / 12%), rgb(36 27 20 / 12%)),
+      url('/images/wood-mahogany.webp') center / cover;
+    backdrop-filter: blur(6px);
+    color: oklch(92% 0.015 80);
+    padding: var(--space-5) 0 var(--space-2);
+  }
+  .site-footer__inner {
+    display: grid;
+    gap: var(--space-3);
+  }
+  @media (min-width: 700px) {
+    .site-footer__inner {
+      grid-template-columns: 1.3fr 1fr 1fr;
+    }
+  }
+  .site-footer__brand {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    color: oklch(92% 0.015 80);
+  }
+  .site-footer p {
+    color: oklch(80% 0.015 80);
+  }
+  .site-footer__heading {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-brass);
+    margin-bottom: var(--space-1);
+  }
+  .site-footer__links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .site-footer__links a {
+    font-size: 0.875rem;
+    color: oklch(88% 0.015 80);
+    text-decoration: none;
+  }
+  .site-footer__links a:hover {
+    color: var(--color-brass);
+  }
+  .site-footer__contact {
+    font-size: 0.875rem;
+    line-height: 1.8;
+    color: oklch(88% 0.015 80);
+  }
+  .site-footer__bottom {
+    margin-top: var(--space-4);
+    padding-top: var(--space-2);
+    border-top: 1px solid oklch(40% 0.02 60);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    color: oklch(65% 0.015 75);
+  }
+</style>

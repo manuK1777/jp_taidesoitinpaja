@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import SiteFooter from '../components/SiteFooter.astro';
+import SiteHeader from '../components/SiteHeader.astro';
 
 interface Props {
   title: string;
@@ -18,6 +20,8 @@ const { title, description = 'Handcrafted Nordic and Central Asian folk instrume
     <title>{title} · Taidesoitinpaja</title>
   </head>
   <body>
+    <SiteHeader />
     <slot />
+    <SiteFooter />
   </body>
 </html>
