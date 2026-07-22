@@ -31,44 +31,42 @@ const galleryItems = items.map((item, index) => ({
 
 <section class="gallery-filmstrip" class:list={{ 'gallery-filmstrip--muted': muted }}>
   <div class="container gallery-filmstrip__header">
-    <div>
     <h2>{title}</h2>
-    </div>
-    <div class="gallery-filmstrip__controls">
-      <WoodArrowButton
-        direction="left"
-        ariaLabel="Scroll left"
-        gradientId={`${galleryId}-wood-gradient-left`}
-        scrollDirection="left"
-      />
-      <WoodArrowButton
-        direction="right"
-        ariaLabel="Scroll right"
-        gradientId={`${galleryId}-wood-gradient-right`}
-        scrollDirection="right"
-      />
-    </div>
   </div>
-  <div class="gallery-filmstrip__track" data-gallery-track id={`${galleryId}-track`}>
-    {galleryItems.map((item) => (
-      <button
-        type="button"
-        class="gallery-filmstrip__item"
-        style={`width: ${itemWidth}`}
-        data-lightbox-group={galleryId}
-        data-lightbox-src={item.lightboxSrc}
-        data-lightbox-alt={item.alt}
-        data-lightbox-caption={item.caption}
-      >
-        <Image
-          src={item.src}
-          alt={item.alt}
-          width={imgWidth}
-          height={imgHeight}
-          loading="lazy"
-        />
-      </button>
-    ))}
+  <div class="gallery-filmstrip__carousel">
+    <WoodArrowButton
+      direction="left"
+      ariaLabel="Scroll gallery left"
+      gradientId={`${galleryId}-wood-gradient-left`}
+      scrollDirection="left"
+    />
+    <div class="gallery-filmstrip__track" data-gallery-track id={`${galleryId}-track`}>
+      {galleryItems.map((item) => (
+        <button
+          type="button"
+          class="gallery-filmstrip__item"
+          style={`width: ${itemWidth}`}
+          data-lightbox-group={galleryId}
+          data-lightbox-src={item.lightboxSrc}
+          data-lightbox-alt={item.alt}
+          data-lightbox-caption={item.caption}
+        >
+          <Image
+            src={item.src}
+            alt={item.alt}
+            width={imgWidth}
+            height={imgHeight}
+            loading="lazy"
+          />
+        </button>
+      ))}
+    </div>
+    <WoodArrowButton
+      direction="right"
+      ariaLabel="Scroll gallery right"
+      gradientId={`${galleryId}-wood-gradient-right`}
+      scrollDirection="right"
+    />
   </div>
   <div class="gallery-filmstrip__scrollbar">
     <WoodenScrollBar for={`#${galleryId}-track`} />
@@ -101,10 +99,9 @@ const galleryItems = items.map((item, index) => ({
   }
 
   .gallery-filmstrip__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-2);
+    max-width: 80%;
+    margin-inline: auto;
+    padding-inline: var(--space-3);
     margin-bottom: var(--space-3);
   }
 
@@ -113,17 +110,33 @@ const galleryItems = items.map((item, index) => ({
   }
 
   .gallery-filmstrip__header h2 {
-    font-size: clamp(1.4rem, 3vw, 1.75rem);
+    font-size: clamp(1.4rem, 3vw, 2.25rem);
   }
 
-  .gallery-filmstrip__controls {
-    display: flex;
-    gap: var(--space-1);
-    flex-shrink: 0;
+
+  .gallery-filmstrip__carousel {
+    position: relative;
+    width: 80%;
+    margin-inline: auto;
+  }
+
+  .gallery-filmstrip__carousel :global(.wood-arrow-btn) {
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    transform: translateY(-50%);
+  }
+
+  .gallery-filmstrip__carousel :global(.wood-arrow-btn:first-child) {
+    left: calc(-1 * (40px + var(--space-2)));
+  }
+
+  .gallery-filmstrip__carousel :global(.wood-arrow-btn:last-child) {
+    right: calc(-1 * (40px + var(--space-2)));
   }
 
   .gallery-filmstrip__track {
-    max-width: 80%;
+    max-width: none;
     margin-inline: auto;
     display: flex;
     gap: var(--space-2);
@@ -132,6 +145,7 @@ const galleryItems = items.map((item, index) => ({
     padding-inline: var(--space-3);
     scroll-snap-type: x mandatory;
     padding-bottom: var(--space-1);
+    margin-bottom: var(--space-2);
   }
 
   .gallery-filmstrip__track::-webkit-scrollbar {
@@ -149,6 +163,8 @@ const galleryItems = items.map((item, index) => ({
     scroll-snap-align: start;
     border: 0;
     border-radius: 6px;
+    border: 6px solid #6b4c2e;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
     background: none;
     padding: 0;
     overflow: hidden;

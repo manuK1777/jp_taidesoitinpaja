@@ -6,4 +6,11 @@ export default defineConfig({
   image: {
     domains: ['cdn.sanity.io'],
   },
+  vite: {
+    server: {
+      watch: {
+        usePolling: true,
+      },
+    },
+  },
 });

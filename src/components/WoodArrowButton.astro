@@ -23,21 +23,25 @@ const arrowPath = direction === 'left' ? 'M32 17 L19 28 L32 39' : 'M24 17 L37 28
         <stop offset="100%" stop-color="#8a5f3a" />
       </radialGradient>
     </defs>
-    <circle cx="28" cy="28" r="26" fill={`url(#${gradientId})`} stroke="#5c3d24" stroke-width="1.5" />
-    <path d="M12 25 Q28 20 44 25 M12 31 Q28 36 44 31" fill="none" stroke="#5c3d24" stroke-width="0.6" opacity="0.35" />
-    <path d={arrowPath} fill="none" stroke="#3e2a18" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.4" transform="translate(0.8,0.8)" />
+    <circle cx="29" cy="30" r="25" fill="#4a2f1c" />
+    <circle cx="28" cy="27" r="25" fill={`url(#${gradientId})`} stroke="#5c3d24" stroke-width="1.5" />
+    <circle cx="28" cy="27" r="22.5" fill="none" stroke="rgb(255 245 220 / 28%)" stroke-width="1.2" />
+    <path d="M12 24 Q28 19 44 24 M12 30 Q28 35 44 30" fill="none" stroke="#5c3d24" stroke-width="0.6" opacity="0.35" />
+    <path d={arrowPath} fill="none" stroke="#3e2a18" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.45" transform="translate(1.2,2)" />
     <path d={arrowPath} fill="none" stroke="#faf3e6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
   </svg>
 </button>
 
 <style>
   .wood-arrow-btn {
-    width: 40px;
-    height: 40px;
+    width: 45px;
+    height: 45px;
     border: none;
     background: none;
     cursor: pointer;
     padding: 0;
+    filter: drop-shadow(0 3px 2px rgb(0 0 0 / 28%));
+    transition: transform 150ms ease, filter 150ms ease;
   }
 
   .wood-arrow-btn svg {
@@ -45,8 +49,18 @@ const arrowPath = direction === 'left' ? 'M32 17 L19 28 L32 39' : 'M24 17 L37 28
     height: 100%;
   }
 
-  .wood-arrow-btn:hover circle {
+  .wood-arrow-btn:hover {
+    filter: drop-shadow(0 4px 4px rgb(0 0 0 / 32%));
+    transform: translateY(-1px);
+  }
+
+  .wood-arrow-btn:hover circle:nth-of-type(2) {
     filter: brightness(1.08);
+  }
+
+  .wood-arrow-btn:active {
+    filter: drop-shadow(0 1px 1px rgb(0 0 0 / 24%));
+    transform: translateY(2px);
   }
 
   .wood-arrow-btn:focus-visible {

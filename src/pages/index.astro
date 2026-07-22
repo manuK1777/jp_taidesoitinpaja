@@ -180,7 +180,7 @@ const upcomingWorkshops = await sanityClient.fetch(`
 
   {homePage?.workInProgress?.length > 0 && (
     <GalleryFilmstrip
-      title="Work in Process Gallery"
+      title="Work in Progress"
       items={homePage.workInProgress}
       imgWidth={360}
       imgHeight={450}
@@ -190,18 +190,23 @@ const upcomingWorkshops = await sanityClient.fetch(`
   )}
 
   <section class="our-story container reveal">
-    <h2>Our Story</h2>
-    <p class="eyebrow our-story__eyebrow">Crafting Musical Legacies</p>
-    <p class="our-story__body">Taidesoitinpaja's journey is rooted in a deep passion 
-      for preserving the rich essence of folk music through exquisitely handcrafted 
-      instruments. Each creation embodies a unique story of heritage, quality, and 
-      unwavering dedication to the art of instrument making. We invite you to embark 
-      on this melodic voyage with us, where exceptional craftsmanship intertwines with boundless creativity, paving the way for a harmonious musical future.</p>
+    <div class="our-story__content">
+      <h2>Our Story</h2>
+      <p class="eyebrow our-story__eyebrow">Crafting Musical Legacies</p>
+      <p class="our-story__body">Taidesoitinpaja's journey is rooted in a deep passion 
+        for preserving the rich essence of folk music through exquisitely handcrafted 
+        instruments. Each creation embodies a unique story of heritage, quality, and 
+        unwavering dedication to the art of instrument making. We invite you to embark 
+        on this melodic voyage with us, where exceptional craftsmanship intertwines with boundless creativity, paving the way for a harmonious musical future.</p>
+    </div>
+    <div class="our-story__image-wrap">
+      <Image src={heroImage2} alt="J-P Lilja at work in the workshop" class="our-story__image" />
+    </div>
   </section>
 
-  <div class="wide-banner">
+  <!-- <div class="wide-banner">
     <Image src={heroImage2} alt="J-P Lilja at work in the workshop" class="wide-banner__image" />
-  </div>
+  </div> -->
 
   <footer class="site-footer">
     <div class="container site-footer__inner">
@@ -265,17 +270,23 @@ const upcomingWorkshops = await sanityClient.fetch(`
   .site-header__logo {
      background:
       linear-gradient(rgba(31, 36, 20, 0.06), rgb(36 27 20 / 6%)),
-      url('/images/wood-spruce.webp') center / cover;
+      url('/images/natural-wooden-background.webp') center / cover;
     padding-inline: 6px;
     height: auto;
     display: block;
     border: 1px solid #6b4c2e;
     border-radius: 5px;
+    box-shadow:
+      inset 0 1px rgb(255 245 220 / 32%),
+      inset 0 -2px rgb(55 33 18 / 35%),
+      0 3px 0 #4a2f1c,
+      0 5px 10px rgb(0 0 0 / 25%);
   }
   .site-header__brand-text {
     display: flex;
     flex-direction: column;
     line-height: 1.1;
+    text-shadow: 0 1px 1px rgb(0 0 0 / 35%);
   }
   .site-header__name {
     font-family: var(--font-display);
@@ -316,16 +327,16 @@ const upcomingWorkshops = await sanityClient.fetch(`
       inset 0 -2px rgb(55 33 18 / 35%),
       0 3px 0 #4a2f1c,
       0 5px 10px rgb(0 0 0 / 25%);
-    text-shadow: 0 1px 1px rgb(0 0 0 / 45%);
+    text-shadow: 0 1px 1px rgb(0 0 0 / 35%);
     white-space: nowrap;
-    transform: rotate(var(--nav-link-rotation, -0.35deg));
+    transform: rotate(var(--nav-link-rotation, -0.25deg));
     transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
   }
   .site-header__nav a:nth-child(3n + 1) {
-    --nav-link-rotation: -0.7deg;
+    --nav-link-rotation: -0.4deg;
   }
   .site-header__nav a:nth-child(3n + 2) {
-    --nav-link-rotation: 0.5deg;
+    --nav-link-rotation: 0.3deg;
   }
   .site-header__nav a:nth-child(3n) {
     --nav-link-rotation: -0.2deg;
@@ -423,6 +434,9 @@ const upcomingWorkshops = await sanityClient.fetch(`
   }
   .hero h1 {
     color: var(--color-brass);
+    text-shadow:
+    -1px -1px 1px oklch(10% 0.03 55.1 / 0.18),   /* shadow: darker, same hue */
+     1px  1px 1px oklch(55% 0.04 60 / 0.7);   /* highlight: lighter, same hue */
   }
   .hero__sub {
     margin-block: var(--space-2) var(--space-3);
@@ -547,9 +561,13 @@ const upcomingWorkshops = await sanityClient.fetch(`
 
   /* Our Story */
   .our-story {
-    max-width: 44rem;
+    display: grid;
+    gap: var(--space-4);
     padding-block: var(--space-5);
-    text-align: center;
+  }
+  .our-story__content {
+    max-width: 38rem;
+    text-align: left;
   }
   .our-story__eyebrow {
     margin-block: 0.4em var(--space-2);
@@ -558,6 +576,25 @@ const upcomingWorkshops = await sanityClient.fetch(`
     font-size: 1.0625rem;
     line-height: 1.75;
   }
+  .our-story__image-wrap {
+    overflow: hidden;
+    border: 12px solid #6b4c2e;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
+  }
+  .our-story__image-wrap :global(.our-story__image) {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 5 / 3;
+    object-fit: cover;
+    display: block;
+  }
+  @media (min-width: 800px) {
+    .our-story {
+      grid-template-columns: minmax(0, 0.9fr) minmax(18rem, 1.1fr);
+      align-items: start;
+    }
+    }
 
   /* Wide banner */
   .wide-banner {

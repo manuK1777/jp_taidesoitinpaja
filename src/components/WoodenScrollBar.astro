@@ -11,6 +11,7 @@ const { for: target } = Astro.props;
 ---
 
 <div class="wood-scrollbar" data-wood-scrollbar data-scrollbar-target={target}>
+  <p class="wood-scrollbar-text">Scroll to browse</p>
   <div class="wood-scrollbar-track">
     <div class="wood-scrollbar-thumb" role="scrollbar" aria-orientation="horizontal" tabindex="0"></div>
   </div>
@@ -108,6 +109,16 @@ const { for: target } = Astro.props;
       inset 0 2px 5px rgba(90, 60, 30, 0.55),
       inset 0 -1px 1px rgba(230, 210, 180, 0.3);
     position: relative;
+  }
+
+  .wood-scrollbar-text {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: oklch(0.83 0.09 81.54);
+    margin-bottom: var(--space-2);
   }
 
   .wood-scrollbar-thumb {
