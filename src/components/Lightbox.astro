@@ -1,4 +1,7 @@
 ---
+import WoodArrowButton from './WoodArrowButton.astro';
+import WoodenCloseButton from './WoodenCloseButton.astro';
+
 // Reusable lightbox. Include this component ONCE per page.
 // Any element on the page can trigger it by adding:
 //   data-lightbox-group="[gallery id]"      (groups images into one carousel)
@@ -10,13 +13,31 @@
 ---
 
 <dialog id="lightbox" class="lightbox">
-  <button type="button" class="lightbox__close" aria-label="Close">✕</button>
-  <button type="button" class="lightbox__nav lightbox__nav--prev" aria-label="Previous image">‹</button>
   <figure class="lightbox__figure">
-    <img class="lightbox__image" src="" alt="" />
+    <div class="lightbox__media">
+      <WoodenCloseButton
+        ariaLabel="Close"
+        gradientId="lightbox-wood-gradient-close"
+        className="lightbox__close"
+      />
+      <div class="lightbox__nav lightbox__nav--prev">
+        <WoodArrowButton
+          direction="left"
+          ariaLabel="Previous image"
+          gradientId="lightbox-wood-gradient-left"
+        />
+      </div>
+      <img class="lightbox__image" src="" alt="" />
+      <div class="lightbox__nav lightbox__nav--next">
+        <WoodArrowButton
+          direction="right"
+          ariaLabel="Next image"
+          gradientId="lightbox-wood-gradient-right"
+        />
+      </div>
+    </div>
     <figcaption class="lightbox__caption"></figcaption>
   </figure>
-  <button type="button" class="lightbox__nav lightbox__nav--next" aria-label="Next image">›</button>
   <p class="lightbox__counter"></p>
 </dialog>
 
@@ -28,8 +49,8 @@
   const captionEl = dialog.querySelector('.lightbox__caption') as HTMLElement;
   const counterEl = dialog.querySelector('.lightbox__counter') as HTMLElement;
   const closeBtn = dialog.querySelector('.lightbox__close') as HTMLButtonElement;
-  const prevBtn = dialog.querySelector('.lightbox__nav--prev') as HTMLButtonElement;
-  const nextBtn = dialog.querySelector('.lightbox__nav--next') as HTMLButtonElement;
+  const prevBtn = dialog.querySelector('.lightbox__nav--prev') as HTMLElement;
+  const nextBtn = dialog.querySelector('.lightbox__nav--next') as HTMLElement;
 
   let currentItems: LightboxItem[] = [];
   let currentIndex = 0;
@@ -139,7 +160,7 @@
   }
 
   .lightbox::backdrop {
-    background: rgba(26, 36, 32, 0.94);
+    background: rgba(26, 36, 32, 0.80);
   }
 
   .lightbox[open] {
@@ -177,40 +198,33 @@
     display: none;
   }
 
-  .lightbox__close,
+  .lightbox__media {
+    position: relative;
+  }
+
+  :global(.lightbox__close) {
+    position: absolute;
+    top: var(--space-1);
+    right: var(--space-1);
+  }
+
   .lightbox__nav {
-    position: fixed;
-    background: transparent;
-    border: 1px solid var(--color-brass);
-    color: var(--color-cream);
-    border-radius: var(--radius);
-    font-size: 1.5rem;
-    line-height: 1;
-    padding: 0.5em 0.8em;
-    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    transform: translateY(-50%);
   }
 
-  .lightbox__close:hover,
-  .lightbox__nav:hover {
-    background: var(--color-brass);
-    color: var(--color-bg);
-  }
-
-  .lightbox__close {
-    top: var(--space-2);
-    right: var(--space-2);
+  .lightbox__nav :global(.wood-arrow-btn) {
+    display: block;
   }
 
   .lightbox__nav--prev {
-    left: var(--space-2);
-    top: 50%;
-    transform: translateY(-50%);
+    left: var(--space-1);
   }
 
   .lightbox__nav--next {
-    right: var(--space-2);
-    top: 50%;
-    transform: translateY(-50%);
+    right: var(--space-1);
   }
 
   .lightbox__counter {
@@ -225,10 +239,4 @@
     margin: 0;
   }
 
-  @media (max-width: 640px) {
-    .lightbox__nav {
-      font-size: 1.1rem;
-      padding: 0.4em 0.6em;
-    }
-  }
 </style>
