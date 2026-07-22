@@ -49,6 +49,13 @@ const arrowPath = direction === 'left' ? 'M32 17 L19 28 L32 39' : 'M24 17 L37 28
     height: 100%;
   }
 
+  @media (max-width: 639px) {
+    .wood-arrow-btn {
+      width: 36px;
+      height: 36px;
+    }
+  }
+
   .wood-arrow-btn:hover {
     filter: drop-shadow(0 4px 4px rgb(0 0 0 / 32%));
     transform: translateY(-1px);

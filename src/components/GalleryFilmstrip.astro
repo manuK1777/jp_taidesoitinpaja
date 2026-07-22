@@ -135,6 +135,20 @@ const galleryItems = items.map((item, index) => ({
     right: calc(-1 * (40px + var(--space-2)));
   }
 
+  @media (max-width: 639px) {
+    .gallery-filmstrip__carousel {
+      width: 92%;
+    }
+
+    .gallery-filmstrip__carousel :global(.wood-arrow-btn:first-child) {
+      left: 0;
+    }
+
+    .gallery-filmstrip__carousel :global(.wood-arrow-btn:last-child) {
+      right: 0;
+    }
+  }
+
   .gallery-filmstrip__track {
     max-width: none;
     margin-inline: auto;
