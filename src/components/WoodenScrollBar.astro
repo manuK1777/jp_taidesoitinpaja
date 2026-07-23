@@ -36,7 +36,9 @@ const { for: target } = Astro.props;
         }
         bar.hidden = false;
 
-        const widthPct = (clientWidth / scrollWidth) * 100;
+        // const widthPct = (clientWidth / scrollWidth) * 80;
+        const ratio = clientWidth / scrollWidth;
+        const widthPct = Math.max(8, Math.min(40, ratio * 70));
         const maxScroll = scrollWidth - clientWidth;
         const leftPct = (scrollLeft / maxScroll) * (100 - widthPct);
 
