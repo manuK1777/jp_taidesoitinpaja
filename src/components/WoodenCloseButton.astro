@@ -11,24 +11,22 @@ const { ariaLabel, gradientId, className = '' } = Astro.props;
 <button type="button" class:list={['wood-close-btn', className]} aria-label={ariaLabel}>
   <svg viewBox="0 0 56 56" aria-hidden="true">
     <defs>
-      <radialGradient id={gradientId} cx="35%" cy="30%" r="75%">
-        <stop offset="0%" stop-color="#c9a06b" />
-        <stop offset="100%" stop-color="#8a5f3a" />
-      </radialGradient>
+      <linearGradient id={gradientId} x1="14" y1="14" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#d6af77" />
+        <stop offset="52%" stop-color="#a87543" />
+        <stop offset="100%" stop-color="#714524" />
+      </linearGradient>
     </defs>
-    <circle cx="29" cy="30" r="25" fill="#4a2f1c" />
-    <circle cx="28" cy="27" r="25" fill={`url(#${gradientId})`} stroke="#5c3d24" stroke-width="1.5" />
-    <circle cx="28" cy="27" r="22.5" fill="none" stroke="rgb(255 245 220 / 28%)" stroke-width="1.2" />
-    <path d="M12 24 Q28 19 44 24 M12 30 Q28 35 44 30" fill="none" stroke="#5c3d24" stroke-width="0.6" opacity="0.35" />
-    <path d="M21 20 L35 34 M35 20 L21 34" fill="none" stroke="#3e2a18" stroke-width="5.5" stroke-linecap="round" opacity="0.45" transform="translate(1.2,2)" />
-    <path d="M21 20 L35 34 M35 20 L21 34" fill="none" stroke="#faf3e6" stroke-width="4" stroke-linecap="round" />
+    <path d="M18 18 L38 38 M38 18 L18 38" fill="none" stroke="#4a2f1c" stroke-width="10" stroke-linecap="round" transform="translate(1.4,2.2)" />
+    <path class="wood-close-btn__face" d="M18 18 L38 38 M38 18 L18 38" fill="none" stroke={`url(#${gradientId})`} stroke-width="10" stroke-linecap="round" />
+    <path d="M18 18 L38 38 M38 18 L18 38" fill="none" stroke="rgb(255 245 220 / 28%)" stroke-width="1.2" stroke-linecap="round" transform="translate(0,-1.2)" />
   </svg>
 </button>
 
 <style>
   .wood-close-btn {
-    width: 45px;
-    height: 45px;
+    width: 50px;
+    height: 50px;
     border: none;
     background: none;
     cursor: pointer;
@@ -44,8 +42,8 @@ const { ariaLabel, gradientId, className = '' } = Astro.props;
 
   @media (max-width: 639px) {
     .wood-close-btn {
-      width: 36px;
-      height: 36px;
+      width: 46px;
+      height: 46px;
     }
   }
 
@@ -54,7 +52,7 @@ const { ariaLabel, gradientId, className = '' } = Astro.props;
     transform: translateY(-1px);
   }
 
-  .wood-close-btn:hover circle:nth-of-type(2) {
+  .wood-close-btn:hover .wood-close-btn__face {
     filter: brightness(1.08);
   }
 
@@ -66,6 +64,6 @@ const { ariaLabel, gradientId, className = '' } = Astro.props;
   .wood-close-btn:focus-visible {
     outline: 2px solid var(--color-cream);
     outline-offset: 3px;
-    border-radius: 50%;
+    border-radius: 5px;
   }
 </style>

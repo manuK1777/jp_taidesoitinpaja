@@ -7,7 +7,9 @@ interface Props {
 }
 
 const { direction, ariaLabel, gradientId, scrollDirection } = Astro.props;
-const arrowPath = direction === 'left' ? 'M32 17 L19 28 L32 39' : 'M24 17 L37 28 L24 39';
+const arrowPath = direction === 'left'
+  ? 'M46 21 H27 V13 L9 28 L27 43 V35 H46 Z'
+  : 'M10 21 H29 V13 L47 28 L29 43 V35 H10 Z';
 ---
 
 <button
@@ -18,24 +20,23 @@ const arrowPath = direction === 'left' ? 'M32 17 L19 28 L32 39' : 'M24 17 L37 28
 >
   <svg viewBox="0 0 56 56" aria-hidden="true">
     <defs>
-      <radialGradient id={gradientId} cx="35%" cy="30%" r="75%">
-        <stop offset="0%" stop-color="#c9a06b" />
-        <stop offset="100%" stop-color="#8a5f3a" />
-      </radialGradient>
+      <linearGradient id={gradientId} x1="10" y1="13" x2="46" y2="43" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#d6af77" />
+        <stop offset="52%" stop-color="#a87543" />
+        <stop offset="100%" stop-color="#714524" />
+      </linearGradient>
     </defs>
-    <circle cx="29" cy="30" r="25" fill="#4a2f1c" />
-    <circle cx="28" cy="27" r="25" fill={`url(#${gradientId})`} stroke="#5c3d24" stroke-width="1.5" />
-    <circle cx="28" cy="27" r="22.5" fill="none" stroke="rgb(255 245 220 / 28%)" stroke-width="1.2" />
-    <path d="M12 24 Q28 19 44 24 M12 30 Q28 35 44 30" fill="none" stroke="#5c3d24" stroke-width="0.6" opacity="0.35" />
-    <path d={arrowPath} fill="none" stroke="#3e2a18" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.45" transform="translate(1.2,2)" />
-    <path d={arrowPath} fill="none" stroke="#faf3e6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+    <path d={arrowPath} fill="#4a2f1c" transform="translate(1.4,2.2)" />
+    <path class="wood-arrow-btn__face" d={arrowPath} fill={`url(#${gradientId})`} stroke="#5c3d24" stroke-width="1.5" stroke-linejoin="round" />
+    <path d={arrowPath} fill="none" stroke="rgb(255 245 220 / 28%)" stroke-width="1" stroke-linejoin="round" transform="translate(0,-1)" />
+    <path d="M17 25 H34 M17 31 H34" fill="none" stroke="#5c3d24" stroke-width="0.65" opacity="0.32" />
   </svg>
 </button>
 
 <style>
   .wood-arrow-btn {
-    width: 45px;
-    height: 45px;
+    width: 50px;
+    height: 50px;
     border: none;
     background: none;
     cursor: pointer;
@@ -51,8 +52,8 @@ const arrowPath = direction === 'left' ? 'M32 17 L19 28 L32 39' : 'M24 17 L37 28
 
   @media (max-width: 639px) {
     .wood-arrow-btn {
-      width: 36px;
-      height: 36px;
+      width: 46px;
+      height: 46px;
     }
   }
 
@@ -61,7 +62,7 @@ const arrowPath = direction === 'left' ? 'M32 17 L19 28 L32 39' : 'M24 17 L37 28
     transform: translateY(-1px);
   }
 
-  .wood-arrow-btn:hover circle:nth-of-type(2) {
+  .wood-arrow-btn:hover .wood-arrow-btn__face {
     filter: brightness(1.08);
   }
 
@@ -73,6 +74,6 @@ const arrowPath = direction === 'left' ? 'M32 17 L19 28 L32 39' : 'M24 17 L37 28
   .wood-arrow-btn:focus-visible {
     outline: 2px solid var(--color-cream);
     outline-offset: 3px;
-    border-radius: 50%;
+    border-radius: 5px;
   }
 </style>
