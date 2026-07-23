@@ -113,6 +113,11 @@ const galleryItems = items.map((item, index) => ({
     font-size: clamp(1.4rem, 3vw, 2.25rem);
   }
 
+  @media (max-width: 639px) {
+    .gallery-filmstrip__header {
+      text-align: center;
+    }
+  }
 
   .gallery-filmstrip__carousel {
     position: relative;
