@@ -159,24 +159,19 @@ button:hover, .btn:hover {
 .reveal {
   opacity: 0;
   transform: translateY(16px);
-  animation: reveal-in 0.7s ease forwards;
-  animation-timeline: view();
-  animation-range: entry 0% cover 30%;
+  transition: opacity 0.7s ease, transform 0.7s ease;
 }
 
-@keyframes reveal-in {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-/* Fallback for browsers without animation-timeline support:
-   content is visible by default via this override */
-@supports not (animation-timeline: view()) {
-  .reveal {
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal.is-visible {
     opacity: 1;
     transform: none;
-    animation: none;
+    transition: none;
   }
 }
