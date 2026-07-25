@@ -108,6 +108,7 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
     const triggers = Array.from(
       document.querySelectorAll<HTMLElement>('[data-lightbox-group]')
     );
+    const mobileLightbox = window.matchMedia('(max-width: 639px)');
 
     const groups = new Map<string, LightboxItem[]>();
     triggers.forEach((el) => {
@@ -126,7 +127,9 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
       const idx = indexWithinGroup.get(group) ?? 0;
       indexWithinGroup.set(group, idx + 1);
 
-      const handler = () => open(groups.get(group)!, idx);
+      const handler = () => {
+        if (!mobileLightbox.matches) open(groups.get(group)!, idx);
+      };
       el.addEventListener('click', handler);
 
       // Buttons/links are already focusable and keyboard-activatable;
@@ -143,6 +146,18 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
         });
       }
     });
+
+    const syncMobileState = () => {
+      triggers.forEach((el) => {
+        if (el instanceof HTMLButtonElement) {
+          el.disabled = mobileLightbox.matches;
+        }
+      });
+      if (mobileLightbox.matches && dialog.open) dialog.close();
+    };
+
+    syncMobileState();
+    mobileLightbox.addEventListener('change', syncMobileState);
   }
 
   initTriggers();

@@ -152,6 +152,17 @@ const galleryItems = items.map((item, index) => ({
     .gallery-filmstrip__carousel :global(.wood-arrow-btn:last-child) {
       right: 0;
     }
+
+    .gallery-filmstrip__item:disabled {
+      pointer-events: none;
+      cursor: default;
+    }
+  }
+
+  @media (hover: none) and (pointer: coarse) {
+    .gallery-filmstrip__carousel :global(.wood-arrow-btn) {
+      display: none;
+    }
   }
 
   .gallery-filmstrip__track {
