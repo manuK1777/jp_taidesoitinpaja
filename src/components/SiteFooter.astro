@@ -7,6 +7,10 @@ const navItems = [
   { label: 'Our Story', href: '/our-story' },
   { label: 'Contact', href: '/contact' },
 ];
+
+const currentPath = new URL(Astro.request.url).pathname;
+const isCurrent = (href: string) =>
+  href === '/' ? currentPath === '/' : currentPath.startsWith(href);
 ---
 
 <footer class="site-footer">
@@ -15,16 +19,18 @@ const navItems = [
       <div class="site-footer__brand">Taidesoitinpaja</div>
       <p>Handcrafted folk instruments from Finland</p>
     </div>
-    <div>
-      <div class="site-footer__heading">Explore</div>
+    <nav aria-labelledby="footer-explore-heading">
+      <h2 class="site-footer__heading" id="footer-explore-heading">Explore</h2>
       <div class="site-footer__links">
         {navItems.map((item) => (
-          <a href={item.href}>{item.label}</a>
+          <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+            {item.label}
+          </a>
         ))}
       </div>
-    </div>
+    </nav>
     <div>
-      <div class="site-footer__heading">Contact</div>
+      <h2 class="site-footer__heading">Contact</h2>
       <p class="site-footer__contact">
         Taidesoitinpaja<br />
         J-P Lilja<br />

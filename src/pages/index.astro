@@ -79,7 +79,9 @@ const upcomingWorkshops = await sanityClient.fetch(`
           <p class="eyebrow">Featured</p>
           <h2>Folk Instruments for Sale</h2>
         </div>
-        <a href="/instruments" class="instruments-band__cta">View All Instruments →</a>
+        <a href="/instruments" class="instruments-band__cta">
+          View All Instruments <span aria-hidden="true">→</span>
+        </a>
       </div>
       <div class="instruments-band__grid">
         {featuredInstruments.map((inst: any) => (
@@ -95,8 +97,8 @@ const upcomingWorkshops = await sanityClient.fetch(`
     </div>
   </section>
 
-  <section class="services container reveal">
-    <h2 class="services__heading">Luthier Workshop Services</h2>
+  <section class="services container reveal" aria-labelledby="services-heading">
+    <h2 class="services__heading" id="services-heading">Luthier Workshop Services</h2>
     <div class="services__layout">
       <div class="services__image-wrap">
         <video
@@ -111,18 +113,18 @@ const upcomingWorkshops = await sanityClient.fetch(`
           aria-label="Inside J-P Lilja's luthier workshop"
         ></video>
       </div>
-      <div class="services__list">
+      <ul class="services__list" role="list">
         {services.map((service) => (
-          <div class="services__item">
+          <li class="services__item">
             <h3>{service.title}</h3>
             <div class="services__tag">{service.tag}</div>
             <p>{service.body}</p>
             {service.title === 'Workshops & Events' && (
               <WorkshopModal events={upcomingWorkshops} />
             )}
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   </section>
 
@@ -163,9 +165,6 @@ const upcomingWorkshops = await sanityClient.fetch(`
     </div>
   </section>
 
-  <!-- <div class="wide-banner">
-    <Image src={heroImage2} alt="J-P Lilja at work in the workshop" class="wide-banner__image" />
-  </div> -->
   <Lightbox />
 </Layout>
 
@@ -286,6 +285,9 @@ const upcomingWorkshops = await sanityClient.fetch(`
   .services__list {
     display: grid;
     gap: var(--space-4);
+    list-style: none;
+    padding: 0;
+    margin: 0;
   }
   @media (min-width: 800px) {
     .services__list {

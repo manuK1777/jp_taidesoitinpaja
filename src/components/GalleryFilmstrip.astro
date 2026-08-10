@@ -46,6 +46,7 @@ const galleryItems = items.map((item, index) => ({
           type="button"
           class="gallery-filmstrip__item"
           style={`width: ${itemWidth}`}
+          aria-label={`Open ${item.caption} in lightbox`}
           data-lightbox-group={galleryId}
           data-lightbox-src={item.lightboxSrc}
           data-lightbox-alt={item.alt}

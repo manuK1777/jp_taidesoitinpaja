@@ -10,6 +10,10 @@ const navItems = [
   { label: 'Our Story', href: '/our-story' },
   { label: 'Contact', href: '/contact' },
 ];
+
+const currentPath = new URL(Astro.request.url).pathname;
+const isCurrent = (href: string) =>
+  href === '/' ? currentPath === '/' : currentPath.startsWith(href);
 ---
 
 <header class="site-header">
@@ -26,14 +30,16 @@ const navItems = [
       aria-controls="site-nav"
       aria-expanded="false"
     >
-      <span></span>
-      <span></span>
-      <span></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
     </button>
 
     <nav class="site-header__nav" id="site-nav">
       {navItems.map((item) => (
-        <a href={item.href}>{item.label}</a>
+        <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+          {item.label}
+        </a>
       ))}
     </nav>
   </div>

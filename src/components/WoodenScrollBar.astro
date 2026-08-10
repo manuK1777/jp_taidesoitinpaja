@@ -10,10 +10,10 @@ interface Props {
 const { for: target } = Astro.props;
 ---
 
-<div class="wood-scrollbar" data-wood-scrollbar data-scrollbar-target={target}>
+<div class="wood-scrollbar" data-wood-scrollbar data-scrollbar-target={target} aria-hidden="true">
   <p class="wood-scrollbar-text">Scroll to browse</p>
   <div class="wood-scrollbar-track">
-    <div class="wood-scrollbar-thumb" role="scrollbar" aria-orientation="horizontal" tabindex="0"></div>
+    <div class="wood-scrollbar-thumb"></div>
   </div>
 </div>
 
@@ -87,13 +87,6 @@ const { for: target } = Astro.props;
         window.addEventListener('pointerup', onPointerUp);
       });
 
-      thumb.addEventListener('keydown', (e: KeyboardEvent) => {
-        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-        e.preventDefault();
-        const step = target.clientWidth * 0.2;
-        target.scrollBy({ left: e.key === 'ArrowLeft' ? -step : step, behavior: 'smooth' });
-      });
-
       update();
     });
   }
@@ -139,10 +132,5 @@ const { for: target } = Astro.props;
 
   .wood-scrollbar-thumb:active {
     cursor: grabbing;
-  }
-
-  .wood-scrollbar-thumb:focus-visible {
-    outline: 2px solid var(--color-cream);
-    outline-offset: 2px;
   }
 </style>

@@ -11,13 +11,21 @@ interface Props {
   triggerLabel?: string;
 }
 
-const { events, triggerLabel = 'See workshop dates →' } = Astro.props;
+const { events, triggerLabel = 'See workshop dates' } = Astro.props;
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 const formatDate = (value?: string) => (value ? dateFormatter.format(new Date(value)) : 'Date TBD');
 ---
 
-<button type="button" class="workshop-modal-trigger" data-workshop-modal-trigger>{triggerLabel}</button>
+<button
+  type="button"
+  class="workshop-modal-trigger"
+  data-workshop-modal-trigger
+  aria-haspopup="dialog"
+  aria-expanded="false"
+>
+  {triggerLabel} <span aria-hidden="true">→</span>
+</button>
 
 <dialog class="workshop-modal" data-workshop-modal>
   <div class="workshop-modal__header">
@@ -40,13 +48,20 @@ const formatDate = (value?: string) => (value ? dateFormatter.format(new Date(va
     const dialog = trigger.nextElementSibling as HTMLDialogElement | null;
     if (!dialog) return;
 
-    trigger.addEventListener('click', () => dialog.showModal());
+    const setOpen = (open: boolean) => trigger.setAttribute('aria-expanded', String(open));
+
+    trigger.addEventListener('click', () => {
+      dialog.showModal();
+      setOpen(true);
+    });
 
     dialog.querySelector('[data-workshop-modal-close]')?.addEventListener('click', () => dialog.close());
 
     dialog.addEventListener('click', (e) => {
       if (e.target === dialog) dialog.close();
     });
+
+    dialog.addEventListener('close', () => setOpen(false));
   });
 </script>
 
