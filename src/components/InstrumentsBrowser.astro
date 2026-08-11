@@ -1,0 +1,277 @@
+---
+import InstrumentCard from './InstrumentCard.astro';
+
+interface Props {
+  instruments: any[];
+  types: { title: string }[];
+}
+
+const { instruments, types } = Astro.props;
+
+const priceRanges = [
+  { label: 'Under €200', min: 0, max: 200 },
+  { label: '€200–€499', min: 200, max: 500 },
+  { label: '€500–€699', min: 500, max: 700 },
+  { label: '€700+', min: 700, max: null },
+];
+---
+
+<div class="instruments-browser" data-instruments-browser>
+  <aside class="instruments-browser__sidebar">
+    <div class="instruments-browser__filters" role="group" aria-label="Instrument filters">
+      <fieldset class="instruments-browser__filter-group">
+        <legend class="instruments-browser__filter-heading">By Instrument Type</legend>
+        <ul class="filter-list" role="list">
+          {types.map((type) => (
+            <li class="filter-list__item">
+              <label class="filter-checkbox">
+                <input
+                  type="checkbox"
+                  name="instrument-type"
+                  value={type.title}
+                  data-type-filter
+                />
+                <span>{type.title}</span>
+              </label>
+            </li>
+          ))}
+        </ul>
+      </fieldset>
+
+      <fieldset class="instruments-browser__filter-group">
+        <legend class="instruments-browser__filter-heading">By Price</legend>
+        <div class="filter-pills" role="group" aria-label="Price range">
+          {priceRanges.map((range) => (
+            <button
+              type="button"
+              class="filter-pill"
+              data-price-range={JSON.stringify(range)}
+              aria-pressed="false"
+            >
+              {range.label}
+            </button>
+          ))}
+        </div>
+      </fieldset>
+    </div>
+  </aside>
+
+  <div class="instruments-browser__main">
+    <p class="instruments-browser__results" aria-live="polite" aria-atomic="true"></p>
+    <p class="instruments-browser__no-results" hidden>
+      No instruments match the selected filters. Try adjusting your choices.
+    </p>
+    <div class="instruments-browser__grid">
+      {instruments.map((inst: any) => (
+        <InstrumentCard
+          name={inst.name}
+          slug={inst.slug}
+          price={inst.price}
+          categoryTitle={inst.categoryTitle}
+          image={inst.image}
+        />
+      ))}
+    </div>
+  </div>
+</div>
+
+<script>
+  const browser = document.querySelector('[data-instruments-browser]');
+  if (browser) {
+    const typeInputs = browser.querySelectorAll<HTMLInputElement>('input[data-type-filter]');
+    const priceButtons = browser.querySelectorAll<HTMLButtonElement>('button[data-price-range]');
+    const cards = browser.querySelectorAll<HTMLElement>('[data-instrument-card]');
+    const noResults = browser.querySelector<HTMLElement>('.instruments-browser__no-results');
+    const resultsCount = browser.querySelector<HTMLElement>('.instruments-browser__results');
+
+    const selectedTypes = () => Array.from(typeInputs)
+      .filter((input) => input.checked)
+      .map((input) => input.value);
+
+    const activePriceRange = () => {
+      const active = Array.from(priceButtons).find((btn) => btn.getAttribute('aria-pressed') === 'true');
+      if (!active?.dataset.priceRange) return null;
+      return JSON.parse(active.dataset.priceRange) as { min: number; max: number | null };
+    };
+
+    const updateResults = (visible: number) => {
+      if (resultsCount) {
+        const total = cards.length;
+        resultsCount.textContent = `Showing ${visible} of ${total} instruments`;
+      }
+    };
+
+    const filter = () => {
+      const types = selectedTypes();
+      const price = activePriceRange();
+      let visible = 0;
+
+      cards.forEach((card) => {
+        const cardType = card.dataset.category || '';
+        const priceAttr = card.dataset.price || '';
+
+        const typeMatch = types.length === 0 || types.includes(cardType);
+        let priceMatch = true;
+
+        if (price) {
+          if (priceAttr === '') {
+            priceMatch = false;
+          } else {
+            const cardPrice = Number(priceAttr);
+            priceMatch = cardPrice >= price.min && (price.max === null || cardPrice < price.max);
+          }
+        }
+
+        const isVisible = typeMatch && priceMatch;
+        card.hidden = !isVisible;
+        if (isVisible) visible++;
+      });
+
+      if (noResults) noResults.hidden = visible > 0;
+      updateResults(visible);
+    };
+
+    typeInputs.forEach((input) => input.addEventListener('change', filter));
+
+    priceButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const isActive = btn.getAttribute('aria-pressed') === 'true';
+        priceButtons.forEach((b) => b.setAttribute('aria-pressed', 'false'));
+        if (!isActive) {
+          btn.setAttribute('aria-pressed', 'true');
+        }
+        filter();
+      });
+    });
+
+    filter();
+  }
+</script>
+
+<style>
+  .instruments-browser {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 900px) {
+    .instruments-browser {
+      grid-template-columns: 220px 1fr;
+      align-items: start;
+    }
+    .instruments-browser__sidebar {
+      position: sticky;
+      top: 120px;
+    }
+  }
+
+  .instruments-browser__filters {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .instruments-browser__filter-group {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .instruments-browser__filter-heading {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-cream);
+  }
+
+  .filter-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    color: var(--color-cream);
+    cursor: pointer;
+  }
+
+  .filter-checkbox input {
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--color-brass);
+    cursor: pointer;
+  }
+
+  .filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .filter-pill {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 0.45em 0.9em;
+    border: 1px solid var(--color-brass);
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--color-brass) 10%, transparent);
+    color: var(--color-cream);
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow:
+      inset 0 1px rgb(255 245 220 / 16%),
+      0 2px 4px rgb(0 0 0 / 18%);
+  }
+
+  .filter-pill[aria-pressed="true"] {
+    background: var(--color-brass);
+    color: var(--color-bg);
+    border-color: var(--color-brass);
+  }
+
+  .filter-pill:hover {
+    background: color-mix(in oklch, var(--color-brass) 85%, white);
+    color: var(--color-cream);
+  }
+
+  .instruments-browser__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 700px) {
+    .instruments-browser__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .instruments-browser__results {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.03em;
+    color: var(--color-cream);
+    margin-bottom: var(--space-2);
+  }
+
+  .instruments-browser__no-results {
+    text-align: center;
+    padding-block: var(--space-5);
+    color: var(--color-cream);
+    font-style: italic;
+  }
+</style>

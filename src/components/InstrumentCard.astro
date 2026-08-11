@@ -14,7 +14,13 @@ const { name, slug, price, categoryTitle, image } = Astro.props;
 const imageUrl = image ? urlFor(image).width(600).height(750).fit('crop').auto('format').url() : null;
 ---
 
-<a href={`/instruments/${slug}`} class="instrument-card">
+<a
+  href={`/instruments/${slug}`}
+  class="instrument-card"
+  data-instrument-card
+  data-category={categoryTitle}
+  data-price={price ?? ''}
+>
   <div class="instrument-card__image">
     {imageUrl && <Image src={imageUrl} alt={name} width={600} height={750} loading="lazy" />}
   </div>
@@ -49,6 +55,10 @@ const imageUrl = image ? urlFor(image).width(600).height(750).fit('crop').auto('
 
   .instrument-card:nth-child(3n) {
     --instrument-card-rotation: -0.2deg;
+  }
+
+  .instrument-card[hidden] {
+    display: none;
   }
 
   .instrument-card:hover {

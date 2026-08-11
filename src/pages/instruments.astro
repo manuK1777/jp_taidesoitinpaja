@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import InstrumentCard from '../components/InstrumentCard.astro';
+import InstrumentsBrowser from '../components/InstrumentsBrowser.astro';
 import { sanityClient } from '../lib/sanity';
 
 const instruments = await sanityClient.fetch(`
@@ -12,6 +12,12 @@ const instruments = await sanityClient.fetch(`
     "image": images[0]
   }
 `);
+
+const categoryTitles: string[] = instruments
+  .map((inst: any) => inst.categoryTitle as string)
+  .filter((title: string) => !!title);
+
+const instrumentTypes = [...new Set(categoryTitles)].map((title) => ({ title }));
 ---
 
 <Layout title="Instruments">
@@ -23,17 +29,7 @@ const instruments = await sanityClient.fetch(`
           <h2 id="instruments-heading">Folk Instruments for Sale</h2>
         </div>
       </div>
-      <div class="instruments-band__grid">
-        {instruments.map((inst: any) => (
-          <InstrumentCard
-            name={inst.name}
-            slug={inst.slug}
-            price={inst.price}
-            categoryTitle={inst.categoryTitle}
-            image={inst.image}
-          />
-        ))}
-      </div>
+      <InstrumentsBrowser instruments={instruments} types={instrumentTypes} />
     </div>
   </section>
 </Layout>
@@ -53,14 +49,5 @@ const instruments = await sanityClient.fetch(`
     flex-wrap: wrap;
     margin-bottom: var(--space-3);
   }
-  .instruments-band__grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-3);
-  }
-  @media (min-width: 700px) {
-    .instruments-band__grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
+
 </style>
