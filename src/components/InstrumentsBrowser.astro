@@ -154,21 +154,26 @@ const priceRanges = [
     gap: var(--space-4);
   }
 
-  @media (min-width: 900px) {
-    .instruments-browser {
-      grid-template-columns: 220px 1fr;
-      align-items: start;
+    @media (min-width: 900px) {
+      .instruments-browser {
+        grid-template-columns: 220px 1fr;
+        align-items: start;
+      }
+      .instruments-browser__sidebar {
+        position: sticky;
+        top: 120px;
+      }
     }
-    .instruments-browser__sidebar {
-      position: sticky;
-      top: 120px;
-    }
-  }
 
   .instruments-browser__filters {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
+    /* background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E"),
+      color-mix(in oklch, var(--color-brass) 20%, transparent);
+    padding: var(--space-1);
+    border-radius: var(--radius); */
   }
 
   .instruments-browser__filter-group {
@@ -187,6 +192,7 @@ const priceRanges = [
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--color-cream);
+    margin-bottom: var(--space-1);
   }
 
   .filter-list {
@@ -274,4 +280,6 @@ const priceRanges = [
     color: var(--color-cream);
     font-style: italic;
   }
+</style>
+
 </style>

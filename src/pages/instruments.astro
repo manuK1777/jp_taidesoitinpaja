@@ -50,4 +50,17 @@ const instrumentTypes = [...new Set(categoryTitles)].map((title) => ({ title }))
     margin-bottom: var(--space-3);
   }
 
+  /* @media (min-width: 900px) {
+    .instruments-band {
+      background:
+        linear-gradient(rgb(36 27 20 / 12%), rgb(36 27 20 / 62%)),
+        url('/images/striped-wood-texture.webp') center / cover;
+      padding-block: var(--space-5);
+    }
+  } */
+  @media (max-width: 899px) {
+    .instruments-band {
+      background-position: right 60% center;
+    }
+  }
 </style>
