@@ -37,10 +37,11 @@ const instrumentTypes = [...new Set(categoryTitles)].map((title) => ({ title }))
 <style>
   .instruments-band {
     background:
-      linear-gradient(rgb(36 27 20 / 12%), rgb(36 27 20 / 62%)),
+      linear-gradient(rgb(36 27 20 / 12%), rgb(36 27 20 / 32%)),
       url('/images/striped-wood-texture.webp') center / cover;
     padding-block: var(--space-5);
   }
+
   .instruments-band__header {
     display: flex;
     align-items: baseline;
@@ -50,17 +51,20 @@ const instrumentTypes = [...new Set(categoryTitles)].map((title) => ({ title }))
     margin-bottom: var(--space-3);
   }
 
-  /* @media (min-width: 900px) {
+  @media (max-width: 899px) {
     .instruments-band {
       background:
         linear-gradient(rgb(36 27 20 / 12%), rgb(36 27 20 / 62%)),
-        url('/images/striped-wood-texture.webp') center / cover;
-      padding-block: var(--space-5);
+        url('/images/striped-wood-texture.webp') center / 300% auto;
+      padding-block: var(--space-4);
     }
-  } */
-  @media (max-width: 899px) {
-    .instruments-band {
-      background-position: right 60% center;
+
+    .instruments-browser__main {
+      background:
+        linear-gradient(rgb(36 27 20 / 12%), rgb(36 27 20 / 62%)),
+        url('/images/striped-wood-texture.webp') center / 180% auto;
+      padding-block: var(--space-5);
+      margin-top: var(--space-4);
     }
   }
 </style>

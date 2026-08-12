@@ -169,11 +169,6 @@ const priceRanges = [
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
-    /* background:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E"),
-      color-mix(in oklch, var(--color-brass) 20%, transparent);
-    padding: var(--space-1);
-    border-radius: var(--radius); */
   }
 
   .instruments-browser__filter-group {
@@ -234,7 +229,7 @@ const priceRanges = [
     padding: 0.45em 0.9em;
     border: 1px solid var(--color-brass);
     border-radius: 999px;
-    background: color-mix(in oklch, var(--color-brass) 10%, transparent);
+    background: color-mix(in oklch, var(--color-brass) 20%, transparent);
     color: var(--color-cream);
     cursor: pointer;
     transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
@@ -269,7 +264,7 @@ const priceRanges = [
   .instruments-browser__results {
     font-family: var(--font-mono);
     font-size: 0.8125rem;
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: 0.03em;
     color: var(--color-cream);
     margin-bottom: var(--space-2);
