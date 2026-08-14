@@ -9,6 +9,7 @@ const instruments = await sanityClient.fetch(`
     "slug": slug.current,
     price,
     "categoryTitle": instrumentType->title,
+    shortDescription,
     "image": images[0]
   }
 `);

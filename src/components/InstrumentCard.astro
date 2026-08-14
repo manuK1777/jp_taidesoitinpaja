@@ -7,10 +7,11 @@ interface Props {
   slug: string;
   price?: number;
   categoryTitle: string;
+  shortDescription?: string;
   image: any;
 }
 
-const { name, slug, price, categoryTitle, image } = Astro.props;
+const { name, slug, price, categoryTitle, shortDescription, image } = Astro.props;
 const imageUrl = image ? urlFor(image).width(600).height(750).fit('crop').auto('format').url() : null;
 ---
 
@@ -26,7 +27,7 @@ const imageUrl = image ? urlFor(image).width(600).height(750).fit('crop').auto('
   </div>
   <div class="instrument-card__meta">
     <h3 class="instrument-card__name">{name}</h3>
-    <span class="instrument-card__category">{categoryTitle}</span>
+    {shortDescription && <span class="instrument-card__category">{shortDescription}</span>}
     {price && <span class="instrument-card__price">€{price}</span>}
   </div>
 </a>
