@@ -1,0 +1,365 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import WoodArrowButton from '../../components/WoodArrowButton.astro';
+import WoodenScrollBar from '../../components/WoodenScrollBar.astro';
+import { PortableText } from 'astro-portabletext';
+import { sanityClient, urlFor } from '../../lib/sanity';
+
+export async function getStaticPaths() {
+  const slugs = await sanityClient.fetch(`
+    *[_type == "instrument" && defined(slug.current)] {
+      "slug": slug.current
+    }
+  `);
+
+  return slugs.map((s: { slug: string }) => ({
+    params: { slug: s.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+const instrument = await sanityClient.fetch(
+  `
+    *[_type == "instrument" && slug.current == $slug][0] {
+      name,
+      price,
+      availability,
+      images,
+      description,
+      specifications,
+      "categoryTitle": instrumentType->title,
+      "categoryDescription": instrumentType->description
+    }
+  `,
+  { slug }
+);
+
+if (!instrument) {
+  return Astro.redirect('/404');
+}
+
+const {
+  name,
+  price,
+  availability,
+  images = [],
+  description,
+  specifications = [],
+  categoryTitle,
+  categoryDescription,
+} = instrument;
+
+const gallery = images.map((image: any, index: number) => ({
+  alt: `${name} – photo ${index + 1}`,
+  thumbSrc: urlFor(image).width(160).height(160).fit('crop').auto('format').url(),
+  mainSrc: urlFor(image).width(900).auto('format').url(),
+}));
+
+const availabilityLabels: Record<string, string> = {
+  'in-stock': 'In stock',
+  sold: 'Sold',
+  'made-to-order': 'Made to order',
+};
+---
+
+<Layout title={name}>
+  <section class="instrument-detail container">
+    <div class="instrument-detail__gallery" data-instrument-gallery>
+      <div class="instrument-detail__main-viewer">
+        {gallery.length > 1 && (
+          <WoodArrowButton
+            direction="left"
+            ariaLabel="Previous photo"
+            gradientId="instrument-gallery-wood-gradient-left"
+            scrollDirection="left"
+          />
+        )}
+        <div class="instrument-detail__main-image">
+          <img
+            data-gallery-main
+            src={gallery[0]?.mainSrc}
+            alt={gallery[0]?.alt}
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+        {gallery.length > 1 && (
+          <WoodArrowButton
+            direction="right"
+            ariaLabel="Next photo"
+            gradientId="instrument-gallery-wood-gradient-right"
+            scrollDirection="right"
+          />
+        )}
+      </div>
+
+      {gallery.length > 1 && (
+        <div class="instrument-detail__carousel">
+          <div class="instrument-detail__thumbs" id="instrument-thumbs-track">
+            {gallery.map((item: { alt: string; thumbSrc: string; mainSrc: string }, index: number) => (
+              <button
+                type="button"
+                class="instrument-detail__thumb"
+                data-gallery-thumb
+                data-main-src={item.mainSrc}
+                data-alt={item.alt}
+                aria-pressed={index === 0 ? 'true' : 'false'}
+                aria-label={`Show photo ${index + 1}`}
+              >
+                <img src={item.thumbSrc} alt="" width="160" height="160" loading="lazy" decoding="async" />
+              </button>
+            ))}
+          </div>
+          <WoodenScrollBar for="#instrument-thumbs-track" />
+        </div>
+      )}
+    </div>
+
+    <div class="instrument-detail__info">
+      <h1>{name}</h1>
+
+      <p class="instrument-detail__price">
+        {price ? `€${price}` : 'Contact for price'}
+      </p>
+
+      {availability && (
+        <span class={`instrument-detail__availability instrument-detail__availability--${availability}`}>
+          {availabilityLabels[availability] ?? availability}
+        </span>
+      )}
+
+      {categoryDescription && (
+        <div class="instrument-detail__text">
+          <PortableText value={categoryDescription} />
+        </div>
+      )}
+
+      {description && description.length > 0 && (
+        <div class="instrument-detail__text instrument-detail__text--own">
+          <PortableText value={description} />
+        </div>
+      )}
+
+      {specifications.length > 0 && (
+        <dl class="instrument-detail__specs">
+          {specifications.map((spec: { label?: string; value?: string }) => (
+            <div class="instrument-detail__spec-row">
+              <dt>{spec.label}</dt>
+              <dd>{spec.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+    </div>
+  </section>
+</Layout>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-instrument-gallery]').forEach((gallery) => {
+    const mainImage = gallery.querySelector<HTMLImageElement>('[data-gallery-main]');
+    const thumbs = Array.from(gallery.querySelectorAll<HTMLButtonElement>('[data-gallery-thumb]'));
+    if (!mainImage || thumbs.length === 0) return;
+
+    let current = 0;
+
+    const setActive = (index: number) => {
+      current = (index + thumbs.length) % thumbs.length;
+      const thumb = thumbs[current];
+      const mainSrc = thumb.dataset.mainSrc;
+      const alt = thumb.dataset.alt;
+      if (mainSrc) mainImage.src = mainSrc;
+      if (alt) mainImage.alt = alt;
+      thumbs.forEach((t, i) => t.setAttribute('aria-pressed', i === current ? 'true' : 'false'));
+    };
+
+    thumbs.forEach((thumb, i) => {
+      thumb.addEventListener('click', () => setActive(i));
+    });
+
+    gallery.querySelectorAll<HTMLButtonElement>('[data-scroll]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const dir = btn.dataset.scroll === 'left' ? -1 : 1;
+        setActive(current + dir);
+      });
+    });
+  });
+</script>
+
+<style>
+  .instrument-detail {
+    display: grid;
+    gap: var(--space-4);
+    padding-block: var(--space-5);
+  }
+
+  @media (min-width: 900px) {
+    .instrument-detail {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+
+  .instrument-detail__main-viewer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+  }
+
+  .instrument-detail__main-viewer :global(.wood-arrow-btn) {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+  }
+
+  .instrument-detail__main-image {
+    flex: 0 1 500px;
+    min-width: 0;
+    max-width: 500px;
+    border-radius: var(--radius);
+    border: 12px solid #6b4c2e;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
+    transition: transform 180ms ease, box-shadow 180ms ease;
+    overflow: hidden;
+  }
+
+  .instrument-detail__main-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .instrument-detail__carousel {
+    margin-top: var(--space-3);
+  }
+
+  .instrument-detail__thumbs {
+    display: flex;
+    gap: var(--space-2);
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-block: var(--space-1);
+    width: min(100%, calc(6 * (70px + 8px) + 5 * var(--space-2)));
+    margin-inline: auto;
+  }
+
+  .instrument-detail__thumbs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .instrument-detail__carousel :global(.wood-scrollbar) {
+    width: min(100%, calc(6 * (70px + 8px) + 5 * var(--space-2)));
+    margin-inline: auto;
+    margin-top: var(--space-2);
+  }
+
+  .instrument-detail__thumb {
+    flex: 0 0 auto;
+    border: 0;
+    border-radius: 5px;
+    border: 4px solid #6b4c2e;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
+    background: none;
+    padding: 0;
+    width: 70px;
+    height: 70px;
+    overflow: hidden;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 180ms ease, transform 180ms ease;
+  }
+
+  .instrument-detail__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .instrument-detail__thumb:hover {
+    opacity: 0.85;
+  }
+
+  .instrument-detail__thumb[aria-pressed="true"] {
+    opacity: 1;
+    border-color: var(--color-brass);
+  }
+
+  .instrument-detail__info h1 {
+    margin-bottom: var(--space-2);
+    font-size: 2.5rem;
+  }
+
+  .instrument-detail__price {
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-cream);
+  }
+
+  .instrument-detail__availability {
+    display: inline-block;
+    margin-top: var(--space-1);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.35em 0.8em;
+    border-radius: 999px;
+    border: 1px solid var(--color-brass);
+    color: var(--color-brass);
+  }
+
+  .instrument-detail__availability--sold {
+    color: var(--color-oxblood);
+    border-color: var(--color-oxblood);
+  }
+
+  .instrument-detail__availability--in-stock {
+    color: var(--color-brass);
+    background: color-mix(in oklch, var(--color-brass) 12%, transparent);
+  }
+
+  .instrument-detail__text {
+    margin-top: var(--space-3);
+    color: var(--color-text-muted);
+    line-height: 1.7;
+  }
+
+  .instrument-detail__text--own {
+    margin-top: var(--space-4);
+  }
+
+  .instrument-detail__text :global(p) {
+    margin-bottom: var(--space-2);
+    color: var(--color-text-muted);
+  }
+
+  .instrument-detail__specs {
+    margin-top: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .instrument-detail__spec-row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-block: 0.4rem;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.95rem;
+  }
+
+  .instrument-detail__spec-row dt {
+    font-weight: 600;
+    color: var(--color-cream);
+  }
+
+  .instrument-detail__spec-row dd {
+    margin: 0;
+    color: var(--color-text-muted);
+    text-align: right;
+  }
+</style>
