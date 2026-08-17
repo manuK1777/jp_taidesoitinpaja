@@ -5,13 +5,14 @@
 // can be dragged to scroll the target.
 interface Props {
   for: string;
+  showText?: boolean;
 }
 
-const { for: target } = Astro.props;
+const { for: target, showText = true } = Astro.props;
 ---
 
 <div class="wood-scrollbar" data-wood-scrollbar data-scrollbar-target={target} aria-hidden="true">
-  <p class="wood-scrollbar-text">Scroll to browse</p>
+  {showText && <p class="wood-scrollbar-text">Scroll to browse</p>}
   <div class="wood-scrollbar-track">
     <div class="wood-scrollbar-thumb"></div>
   </div>

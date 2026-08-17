@@ -1,7 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import WoodArrowButton from '../../components/WoodArrowButton.astro';
-import WoodenScrollBar from '../../components/WoodenScrollBar.astro';
 import { PortableText } from 'astro-portabletext';
 import { sanityClient, urlFor } from '../../lib/sanity';
 
@@ -96,6 +95,14 @@ const availabilityLabels: Record<string, string> = {
 
       {gallery.length > 1 && (
         <div class="instrument-detail__carousel">
+          {gallery.length > 6 && (
+            <WoodArrowButton
+              direction="left"
+              ariaLabel="Scroll thumbnails left"
+              gradientId="instrument-thumbs-wood-gradient-left"
+              scrollDirection="left"
+            />
+          )}
           <div class="instrument-detail__thumbs" id="instrument-thumbs-track">
             {gallery.map((item: { alt: string; thumbSrc: string; mainSrc: string }, index: number) => (
               <button
@@ -111,7 +118,14 @@ const availabilityLabels: Record<string, string> = {
               </button>
             ))}
           </div>
-          <WoodenScrollBar for="#instrument-thumbs-track" />
+          {gallery.length > 6 && (
+            <WoodArrowButton
+              direction="right"
+              ariaLabel="Scroll thumbnails right"
+              gradientId="instrument-thumbs-wood-gradient-right"
+              scrollDirection="right"
+            />
+          )}
         </div>
       )}
     </div>
@@ -177,13 +191,26 @@ const availabilityLabels: Record<string, string> = {
       thumb.addEventListener('click', () => setActive(i));
     });
 
-    gallery.querySelectorAll<HTMLButtonElement>('[data-scroll]').forEach((btn) => {
+    gallery.querySelectorAll<HTMLButtonElement>('.instrument-detail__main-viewer [data-scroll]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const dir = btn.dataset.scroll === 'left' ? -1 : 1;
         setActive(current + dir);
       });
     });
   });
+
+  const thumbTrack = document.querySelector<HTMLElement>('#instrument-thumbs-track');
+  const thumbCarousel = document.querySelector<HTMLElement>('.instrument-detail__carousel');
+
+  if (thumbTrack && thumbCarousel) {
+    const step = thumbTrack.clientWidth;
+    thumbCarousel.querySelectorAll<HTMLButtonElement>('[data-scroll]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const direction = button.dataset.scroll === 'left' ? -1 : 1;
+        thumbTrack.scrollBy({ left: direction * step, behavior: 'smooth' });
+      });
+    });
+  }
 </script>
 
 <style>
@@ -193,10 +220,17 @@ const availabilityLabels: Record<string, string> = {
     padding-block: var(--space-5);
   }
 
+  @media (min-width: 640px) {
+  .instrument-detail.container {
+    padding-inline: 0;
+  }
+}
+
   @media (min-width: 900px) {
     .instrument-detail {
       grid-template-columns: 1fr 1fr;
       align-items: start;
+      column-gap: var(--space-2);
     }
   }
 
@@ -232,26 +266,29 @@ const availabilityLabels: Record<string, string> = {
 
   .instrument-detail__carousel {
     margin-top: var(--space-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
   }
 
   .instrument-detail__thumbs {
     display: flex;
-    gap: var(--space-2);
+    gap: var(--space-1);
     overflow-x: auto;
     scrollbar-width: none;
     padding-block: var(--space-1);
     width: min(100%, calc(6 * (70px + 8px) + 5 * var(--space-2)));
-    margin-inline: auto;
   }
 
   .instrument-detail__thumbs::-webkit-scrollbar {
     display: none;
   }
 
-  .instrument-detail__carousel :global(.wood-scrollbar) {
-    width: min(100%, calc(6 * (70px + 8px) + 5 * var(--space-2)));
-    margin-inline: auto;
-    margin-top: var(--space-2);
+  .instrument-detail__carousel :global(.wood-arrow-btn) {
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
   }
 
   .instrument-detail__thumb {
@@ -288,7 +325,7 @@ const availabilityLabels: Record<string, string> = {
 
   .instrument-detail__info h1 {
     margin-bottom: var(--space-2);
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
 
   .instrument-detail__price {
@@ -328,16 +365,16 @@ const availabilityLabels: Record<string, string> = {
   }
 
   .instrument-detail__text--own {
-    margin-top: var(--space-4);
+    margin-top: var(--space-2);
   }
 
   .instrument-detail__text :global(p) {
-    margin-bottom: var(--space-2);
+    margin-bottom: var(--space-1);
     color: var(--color-text-muted);
   }
 
   .instrument-detail__specs {
-    margin-top: var(--space-4);
+    margin-top: var(--space-1);
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
