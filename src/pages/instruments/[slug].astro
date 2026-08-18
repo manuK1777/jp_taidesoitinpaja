@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import WoodArrowButton from '../../components/WoodArrowButton.astro';
+import WoodenScrollBar from '../../components/WoodenScrollBar.astro';
 import { PortableText } from 'astro-portabletext';
 import { sanityClient, urlFor } from '../../lib/sanity';
 
@@ -126,14 +127,6 @@ const availabilityLabels: Record<string, string> = {
 
       {gallery.length > 1 && (
         <div class="instrument-detail__carousel">
-          {gallery.length > 6 && (
-            <WoodArrowButton
-              direction="left"
-              ariaLabel="Scroll thumbnails left"
-              gradientId="instrument-thumbs-wood-gradient-left"
-              scrollDirection="left"
-            />
-          )}
           <div class="instrument-detail__thumbs" id="instrument-thumbs-track">
             {gallery.map((item: GalleryItem, index: number) => (
               <button
@@ -155,12 +148,7 @@ const availabilityLabels: Record<string, string> = {
             ))}
           </div>
           {gallery.length > 6 && (
-            <WoodArrowButton
-              direction="right"
-              ariaLabel="Scroll thumbnails right"
-              gradientId="instrument-thumbs-wood-gradient-right"
-              scrollDirection="right"
-            />
+            <WoodenScrollBar for="#instrument-thumbs-track" showText={false} />
           )}
         </div>
       )}
@@ -193,6 +181,7 @@ const availabilityLabels: Record<string, string> = {
 
       {specifications.length > 0 && (
         <dl class="instrument-detail__specs">
+          <h2 class="instrument-detail__specs-heading">Specifications</h2>
           {specifications.map((spec: { label?: string; value?: string }) => (
             <div class="instrument-detail__spec-row">
               <dt>{spec.label}</dt>
@@ -250,18 +239,6 @@ const availabilityLabels: Record<string, string> = {
     });
   });
 
-  const thumbTrack = document.querySelector<HTMLElement>('#instrument-thumbs-track');
-  const thumbCarousel = document.querySelector<HTMLElement>('.instrument-detail__carousel');
-
-  if (thumbTrack && thumbCarousel) {
-    const step = thumbTrack.clientWidth;
-    thumbCarousel.querySelectorAll<HTMLButtonElement>('[data-scroll]').forEach((button) => {
-      button.addEventListener('click', () => {
-        const direction = button.dataset.scroll === 'left' ? -1 : 1;
-        thumbTrack.scrollBy({ left: direction * step, behavior: 'smooth' });
-      });
-    });
-  }
 </script>
 
 <style>
@@ -336,12 +313,12 @@ const availabilityLabels: Record<string, string> = {
 
   .instrument-detail__carousel {
     margin-top: var(--space-3);
+    margin-inline: auto;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: var(--space-1);
-    width: 100%;
-    max-width: 100%;
+    gap: var(--space-2);
+    width: min(100%, calc(6 * 70px + 5 * var(--space-1)));
   }
 
   .instrument-detail__thumbs {
@@ -350,19 +327,24 @@ const availabilityLabels: Record<string, string> = {
     overflow-x: auto;
     scrollbar-width: none;
     padding-block: var(--space-1);
-    flex: 1 1 0;
-    min-width: 0;
-    max-width: calc(6 * (70px + 8px) + 5 * var(--space-2));
+    width: 100%;
+  }
+
+  .instrument-detail__carousel :global(.wood-scrollbar) {
+    width: 100%;
   }
 
   .instrument-detail__thumbs::-webkit-scrollbar {
     display: none;
   }
 
-  .instrument-detail__carousel :global(.wood-arrow-btn) {
-    flex: 0 0 auto;
-    width: 30px;
-    height: 30px;
+  @media (hover: none) and (pointer: coarse) {
+    .instrument-detail__main-viewer :global(.wood-arrow-btn) {
+      display: none;
+    }
+    .instrument-detail__carousel :global(.wood-scrollbar) {
+      display: none;
+    }
   }
 
   .instrument-detail__thumb-play {
@@ -422,6 +404,12 @@ const availabilityLabels: Record<string, string> = {
     font-size: 2rem;
   }
 
+  .instrument-detail__specs-heading {
+    margin-bottom: var(--space-1);
+    font-size: 1.5rem;
+    text-shadow: none;
+  }
+
   .instrument-detail__price {
     font-family: var(--font-mono);
     font-size: 1.2rem;
@@ -448,7 +436,7 @@ const availabilityLabels: Record<string, string> = {
   }
 
   .instrument-detail__availability--in-stock {
-    color: var(--color-brass);
+    color: var(--color-dark-brass);
     background: color-mix(in oklch, var(--color-brass) 12%, transparent);
   }
 
@@ -463,7 +451,7 @@ const availabilityLabels: Record<string, string> = {
   }
 
   .instrument-detail__text :global(p) {
-    margin-bottom: var(--space-1);
+    margin-bottom: var(--space-3);
     color: var(--color-text-muted);
   }
 
