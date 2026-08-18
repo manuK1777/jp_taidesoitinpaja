@@ -25,6 +25,10 @@ const instrument = await sanityClient.fetch(
       price,
       availability,
       images,
+      videos[]{
+        "url": asset->url,
+        "mimeType": asset->mimeType
+      },
       description,
       specifications,
       "categoryTitle": instrumentType->title,
@@ -43,17 +47,35 @@ const {
   price,
   availability,
   images = [],
+  videos = [],
   description,
   specifications = [],
   categoryTitle,
   categoryDescription,
 } = instrument;
 
-const gallery = images.map((image: any, index: number) => ({
-  alt: `${name} – photo ${index + 1}`,
-  thumbSrc: urlFor(image).width(160).height(160).fit('crop').auto('format').url(),
-  mainSrc: urlFor(image).width(900).auto('format').url(),
-}));
+type GalleryItem = {
+  type: 'image' | 'video';
+  alt: string;
+  thumbSrc?: string;
+  mainSrc: string;
+  mimeType?: string;
+};
+
+const gallery: GalleryItem[] = [
+  ...images.map((image: any, index: number) => ({
+    type: 'image' as const,
+    alt: `${name} – photo ${index + 1}`,
+    thumbSrc: urlFor(image).width(160).height(160).fit('crop').auto('format').url(),
+    mainSrc: urlFor(image).width(900).auto('format').url(),
+  })),
+  ...videos.map((video: any, index: number) => ({
+    type: 'video' as const,
+    alt: `${name} – video ${index + 1}`,
+    mainSrc: video.url,
+    mimeType: video.mimeType,
+  })),
+];
 
 const availabilityLabels: Record<string, string> = {
   'in-stock': 'In stock',
@@ -76,11 +98,20 @@ const availabilityLabels: Record<string, string> = {
         )}
         <div class="instrument-detail__main-image">
           <img
-            data-gallery-main
-            src={gallery[0]?.mainSrc}
-            alt={gallery[0]?.alt}
+            data-gallery-main-image
+            src={gallery[0]?.type === 'image' ? gallery[0]?.mainSrc : undefined}
+            alt={gallery[0]?.type === 'image' ? gallery[0]?.alt : ''}
+            hidden={gallery[0]?.type !== 'image'}
             loading="eager"
             decoding="async"
+          />
+          <video
+            data-gallery-main-video
+            hidden={gallery[0]?.type !== 'video'}
+            src={gallery[0]?.type === 'video' ? gallery[0]?.mainSrc : undefined}
+            controls
+            playsinline
+            preload="none"
           />
         </div>
         {gallery.length > 1 && (
@@ -104,17 +135,22 @@ const availabilityLabels: Record<string, string> = {
             />
           )}
           <div class="instrument-detail__thumbs" id="instrument-thumbs-track">
-            {gallery.map((item: { alt: string; thumbSrc: string; mainSrc: string }, index: number) => (
+            {gallery.map((item: GalleryItem, index: number) => (
               <button
                 type="button"
                 class="instrument-detail__thumb"
                 data-gallery-thumb
+                data-media-type={item.type}
                 data-main-src={item.mainSrc}
                 data-alt={item.alt}
                 aria-pressed={index === 0 ? 'true' : 'false'}
-                aria-label={`Show photo ${index + 1}`}
+                aria-label={item.type === 'video' ? `Play video ${index + 1}` : `Show photo ${index + 1}`}
               >
-                <img src={item.thumbSrc} alt="" width="160" height="160" loading="lazy" decoding="async" />
+                {item.type === 'video' ? (
+                  <span class="instrument-detail__thumb-play" aria-hidden="true"></span>
+                ) : (
+                  <img src={item.thumbSrc} alt="" width="160" height="160" loading="lazy" decoding="async" />
+                )}
               </button>
             ))}
           </div>
@@ -171,9 +207,10 @@ const availabilityLabels: Record<string, string> = {
 
 <script>
   document.querySelectorAll<HTMLElement>('[data-instrument-gallery]').forEach((gallery) => {
-    const mainImage = gallery.querySelector<HTMLImageElement>('[data-gallery-main]');
+    const mainImage = gallery.querySelector<HTMLImageElement>('[data-gallery-main-image]');
+    const mainVideo = gallery.querySelector<HTMLVideoElement>('[data-gallery-main-video]');
     const thumbs = Array.from(gallery.querySelectorAll<HTMLButtonElement>('[data-gallery-thumb]'));
-    if (!mainImage || thumbs.length === 0) return;
+    if (!mainImage || !mainVideo || thumbs.length === 0) return;
 
     let current = 0;
 
@@ -181,9 +218,23 @@ const availabilityLabels: Record<string, string> = {
       current = (index + thumbs.length) % thumbs.length;
       const thumb = thumbs[current];
       const mainSrc = thumb.dataset.mainSrc;
-      const alt = thumb.dataset.alt;
-      if (mainSrc) mainImage.src = mainSrc;
-      if (alt) mainImage.alt = alt;
+      const alt = thumb.dataset.alt ?? '';
+      const isVideo = thumb.dataset.mediaType === 'video';
+
+      if (isVideo) {
+        mainVideo.pause();
+        if (mainSrc && mainVideo.src !== mainSrc) mainVideo.src = mainSrc;
+        mainImage.hidden = true;
+        mainVideo.hidden = false;
+        mainVideo.play().catch(() => {});
+      } else {
+        if (!mainVideo.hidden) mainVideo.pause();
+        mainVideo.hidden = true;
+        mainImage.hidden = false;
+        if (mainSrc) mainImage.src = mainSrc;
+        mainImage.alt = alt;
+      }
+
       thumbs.forEach((t, i) => t.setAttribute('aria-pressed', i === current ? 'true' : 'false'));
     };
 
@@ -258,10 +309,16 @@ const availabilityLabels: Record<string, string> = {
     overflow: hidden;
   }
 
-  .instrument-detail__main-image img {
+  .instrument-detail__main-image img,
+  .instrument-detail__main-image video {
     width: 100%;
     height: auto;
     display: block;
+  }
+
+  .instrument-detail__main-image img[hidden],
+  .instrument-detail__main-image video[hidden] {
+    display: none;
   }
 
   .instrument-detail__carousel {
@@ -289,6 +346,26 @@ const availabilityLabels: Record<string, string> = {
     flex: 0 0 auto;
     width: 30px;
     height: 30px;
+  }
+
+  .instrument-detail__thumb-play {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: #2a1d12;
+  }
+
+  .instrument-detail__thumb-play::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    margin-left: 3px;
+    border-style: solid;
+    border-width: 8px 0 8px 14px;
+    border-color: transparent transparent transparent var(--color-brass);
   }
 
   .instrument-detail__thumb {
