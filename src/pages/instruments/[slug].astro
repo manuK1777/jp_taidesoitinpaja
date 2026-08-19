@@ -237,6 +237,28 @@ const availabilityLabels: Record<string, string> = {
         setActive(current + dir);
       });
     });
+
+    const mainImageFrame = gallery.querySelector<HTMLElement>('.instrument-detail__main-image');
+    if (mainImageFrame && thumbs.length > 1) {
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      mainImageFrame.addEventListener('touchstart', (e) => {
+        const touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+      }, { passive: true });
+
+      mainImageFrame.addEventListener('touchend', (e) => {
+        const touch = e.changedTouches[0];
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+
+        if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+          setActive(current + (deltaX < 0 ? 1 : -1));
+        }
+      }, { passive: true });
+    }
   });
 
 </script>
@@ -339,9 +361,6 @@ const availabilityLabels: Record<string, string> = {
   }
 
   @media (hover: none) and (pointer: coarse) {
-    .instrument-detail__main-viewer :global(.wood-arrow-btn) {
-      display: none;
-    }
     .instrument-detail__carousel :global(.wood-scrollbar) {
       display: none;
     }
