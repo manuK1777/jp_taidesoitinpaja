@@ -87,7 +87,7 @@ const availabilityLabels: Record<string, string> = {
 
 <Layout title={name}>
   <section class="instrument-detail container">
-    <div class="instrument-detail__gallery" data-instrument-gallery>
+    <div class="instrument-detail__gallery" data-instrument-gallery data-has-multiple={gallery.length > 1 ? 'true' : 'false'}>
       <div class="instrument-detail__main-viewer">
         {gallery.length > 1 && (
           <WoodArrowButton
@@ -150,6 +150,30 @@ const availabilityLabels: Record<string, string> = {
           {gallery.length > 6 && (
             <WoodenScrollBar for="#instrument-thumbs-track" showText={false} />
           )}
+        </div>
+      )}
+
+      {gallery.length > 1 && (
+        <div class="instrument-detail__mobile-carousel" data-mobile-carousel>
+          {gallery.map((item: GalleryItem, index: number) => (
+            <div class="instrument-detail__mobile-slide">
+              {item.type === 'video' ? (
+                <video
+                  src={item.mainSrc}
+                  controls
+                  playsinline
+                  preload="none"
+                />
+              ) : (
+                <img
+                  src={item.mainSrc}
+                  alt={item.alt}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  decoding="async"
+                />
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>
@@ -295,6 +319,46 @@ const availabilityLabels: Record<string, string> = {
     .instrument-detail__main-viewer :global(.wood-arrow-btn) {
       width: 22px;
       height: 22px;
+    }
+    [data-has-multiple="true"] .instrument-detail__main-viewer,
+    [data-has-multiple="true"] .instrument-detail__carousel {
+      display: none;
+    }
+  }
+
+  .instrument-detail__mobile-carousel {
+    display: none;
+  }
+
+  @media (max-width: 639px) {
+    .instrument-detail__mobile-carousel {
+      display: flex;
+      gap: var(--space-2);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
+    }
+
+    .instrument-detail__mobile-carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .instrument-detail__mobile-slide {
+      flex: 0 0 100%;
+      scroll-snap-align: center;
+      border-radius: var(--radius);
+      border: 8px solid #6b4c2e;
+      box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
+      overflow: hidden;
+    }
+
+    .instrument-detail__mobile-slide img,
+    .instrument-detail__mobile-slide video {
+      width: 100%;
+      height: auto;
+      display: block;
     }
   }
 
