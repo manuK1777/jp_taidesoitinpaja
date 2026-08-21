@@ -237,11 +237,16 @@ const availabilityLabels: Record<string, string> = {
   document.querySelectorAll<HTMLElement>('[data-instrument-gallery]').forEach((gallery) => {
     const mainImage = gallery.querySelector<HTMLImageElement>('[data-gallery-main-image]');
     const mainVideo = gallery.querySelector<HTMLVideoElement>('[data-gallery-main-video]');
+    const mainImageFrame = gallery.querySelector<HTMLElement>('.instrument-detail__main-image');
     const thumbs = Array.from(gallery.querySelectorAll<HTMLButtonElement>('[data-gallery-thumb]'));
-    if (!mainImage || !mainVideo || thumbs.length === 0) return;
+    if (!mainImage || !mainVideo || !mainImageFrame || thumbs.length === 0) return;
 
     let current = 0;
     const track = gallery.querySelector<HTMLElement>('#instrument-thumbs-track');
+
+    const initialThumb = thumbs[0];
+    const initialPoster = initialThumb.dataset.mediaType === 'video' ? initialThumb.dataset.posterSrc : '';
+    mainImageFrame.style.setProperty('--backdrop', initialPoster ? `url('${initialPoster}')` : 'none');
 
     const setActive = (index: number) => {
       current = (index + thumbs.length) % thumbs.length;
@@ -268,6 +273,9 @@ const availabilityLabels: Record<string, string> = {
 
       thumbs.forEach((t, i) => t.setAttribute('aria-pressed', i === current ? 'true' : 'false'));
 
+      const posterSrc = thumb.dataset.posterSrc;
+      mainImageFrame.style.setProperty('--backdrop', isVideo && posterSrc ? `url('${posterSrc}')` : 'none');
+
       if (track) {
         thumb.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
       }
@@ -284,8 +292,7 @@ const availabilityLabels: Record<string, string> = {
       });
     });
 
-    const mainImageFrame = gallery.querySelector<HTMLElement>('.instrument-detail__main-image');
-    if (mainImageFrame && thumbs.length > 1) {
+    if (thumbs.length > 1) {
       let touchStartX = 0;
       let touchStartY = 0;
 
@@ -395,7 +402,8 @@ const availabilityLabels: Record<string, string> = {
     min-width: 0;
     max-width: 500px;
     aspect-ratio: 3 / 4;
-    background: var(--color-spruce-black); /* fills empty space */
+    position: relative;
+    background: var(--color-spruce-black);
     border-radius: var(--radius);
     border: 12px solid #6b4c2e;
     box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
@@ -409,12 +417,31 @@ const availabilityLabels: Record<string, string> = {
   }
 }
 
+  .instrument-detail__main-image::before {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    background-image: var(--backdrop, none);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(24px) brightness(0.75);
+    transform: scale(1.08);
+    z-index: 0;
+  }
+
   .instrument-detail__main-image img,
   .instrument-detail__main-image video {
+    position: relative;
+    z-index: 1;
     width: 100%;
     height: 100%;
     object-fit: contain;
     display: block;
+  }
+
+  .instrument-detail__main-image img {
+    object-fit: cover;
   }
 
   .instrument-detail__main-image img[hidden],
