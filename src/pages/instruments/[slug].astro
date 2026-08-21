@@ -241,6 +241,7 @@ const availabilityLabels: Record<string, string> = {
     if (!mainImage || !mainVideo || thumbs.length === 0) return;
 
     let current = 0;
+    const track = gallery.querySelector<HTMLElement>('#instrument-thumbs-track');
 
     const setActive = (index: number) => {
       current = (index + thumbs.length) % thumbs.length;
@@ -266,6 +267,10 @@ const availabilityLabels: Record<string, string> = {
       }
 
       thumbs.forEach((t, i) => t.setAttribute('aria-pressed', i === current ? 'true' : 'false'));
+
+      if (track) {
+        thumb.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+      }
     };
 
     thumbs.forEach((thumb, i) => {
@@ -486,7 +491,7 @@ const availabilityLabels: Record<string, string> = {
     flex: 0 0 auto;
     border: 0;
     border-radius: 5px;
-    border: 4px solid #6b4c2e;
+    border: 2px solid #6b4c2e;
     box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
     background: none;
     padding: 0;
@@ -494,7 +499,7 @@ const availabilityLabels: Record<string, string> = {
     height: 70px;
     overflow: hidden;
     cursor: pointer;
-    opacity: 0.6;
+    opacity: 0.75;
     transition: opacity 180ms ease, transform 180ms ease;
   }
 
@@ -507,11 +512,14 @@ const availabilityLabels: Record<string, string> = {
 
   .instrument-detail__thumb:hover {
     opacity: 0.85;
+     transform: scale(1.1);
+    z-index: 1;
   }
 
   .instrument-detail__thumb[aria-pressed="true"] {
     opacity: 1;
-    border-color: var(--color-brass);
+    transform: scale(1.1);
+    z-index: 1;
   }
 
   .instrument-detail__info h1 {
