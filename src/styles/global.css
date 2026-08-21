@@ -16,6 +16,7 @@
   --color-brass: oklch(70% 0.13 80);        /* aged brass accent */
   --color-dark-brass: oklch(0.54 0.13 74.08); /* darker brass */
   --color-oxblood: oklch(40% 0.1 30);       /* rare accent — use sparingly */
+  --color-spruce-black: oklch(15% 0.02 180); /* deep spruce/black */
 
   --color-text: var(--color-cream);
   --color-text-muted: oklch(35% 0.02 63);

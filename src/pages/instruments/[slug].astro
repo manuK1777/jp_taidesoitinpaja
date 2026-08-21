@@ -394,6 +394,8 @@ const availabilityLabels: Record<string, string> = {
     flex: 0 1 500px;
     min-width: 0;
     max-width: 500px;
+    aspect-ratio: 3 / 4;
+    background: var(--color-spruce-black); /* fills empty space */
     border-radius: var(--radius);
     border: 12px solid #6b4c2e;
     box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
@@ -410,7 +412,8 @@ const availabilityLabels: Record<string, string> = {
   .instrument-detail__main-image img,
   .instrument-detail__main-image video {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: contain;
     display: block;
   }
 
