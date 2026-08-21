@@ -170,7 +170,7 @@ const availabilityLabels: Record<string, string> = {
       {gallery.length > 1 && (
         <div class="instrument-detail__mobile-carousel" data-mobile-carousel>
           {gallery.map((item: GalleryItem, index: number) => (
-            <div class="instrument-detail__mobile-slide">
+            <div class={'instrument-detail__mobile-slide ' + (index === 0 ? 'is-active' : '')} style={'--mobile-backdrop: ' + (item.type === 'video' && item.posterSrc ? 'url(\'' + item.posterSrc + '\')' : 'none')}>
               {item.type === 'video' ? (
                 <video
                   src={item.mainSrc}
@@ -316,6 +316,24 @@ const availabilityLabels: Record<string, string> = {
 
 </script>
 
+<script>
+  document.querySelectorAll('[data-mobile-carousel]').forEach((carousel) => {
+    const slides = Array.from(carousel.querySelectorAll('.instrument-detail__mobile-slide'));
+    if (slides.length < 2) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          entry.target.classList.toggle('is-active', entry.isIntersecting);
+        });
+      },
+      { root: carousel, threshold: 0.5 }
+    );
+
+    slides.forEach((slide) => observer.observe(slide));
+  });
+</script>
+
 <style>
   .instrument-detail {
     display: grid;
@@ -375,19 +393,50 @@ const availabilityLabels: Record<string, string> = {
     }
 
     .instrument-detail__mobile-slide {
-      flex: 0 0 100%;
+      flex: 0 0 80%;
       scroll-snap-align: center;
+      position: relative;
+      aspect-ratio: 3 / 4;
+      background: var(--color-spruce-black);
       border-radius: var(--radius);
       border: 8px solid #6b4c2e;
       box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
       overflow: hidden;
+      opacity: 0.7;
+      transform: scale(0.96);
+      transition: opacity 200ms ease, transform 200ms ease;
+    }
+
+    .instrument-detail__mobile-slide.is-active {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .instrument-detail__mobile-slide::before {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      background-image: var(--mobile-backdrop, none);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: blur(24px) brightness(0.75);
+      transform: scale(1.08);
+      z-index: 0;
     }
 
     .instrument-detail__mobile-slide img,
     .instrument-detail__mobile-slide video {
+      position: relative;
+      z-index: 1;
       width: 100%;
-      height: auto;
+      height: 100%;
+      object-fit: contain;
       display: block;
+    }
+
+    .instrument-detail__mobile-slide img {
+      object-fit: cover;
     }
   }
 
