@@ -27,8 +27,10 @@ const instrument = await sanityClient.fetch(
       availability,
       images,
       videos[]{
-        "url": asset->url,
-        "mimeType": asset->mimeType
+        "url": video.asset->url,
+        "mimeType": video.asset->mimeType,
+        poster,
+        description
       },
       description,
       specifications,
@@ -61,6 +63,7 @@ type GalleryItem = {
   thumbSrc?: string;
   mainSrc: string;
   mimeType?: string;
+  posterSrc?: string;
 };
 
 const gallery: GalleryItem[] = [
@@ -72,9 +75,15 @@ const gallery: GalleryItem[] = [
   })),
   ...videos.map((video: any, index: number) => ({
     type: 'video' as const,
-    alt: `${name} – video ${index + 1}`,
+    alt: video.description || `${name} – video ${index + 1}`,
     mainSrc: video.url,
     mimeType: video.mimeType,
+    thumbSrc: video.poster
+      ? urlFor(video.poster).width(160).height(160).fit('crop').auto('format').url()
+      : undefined,
+    posterSrc: video.poster
+      ? urlFor(video.poster).width(900).auto('format').url()
+      : undefined,
   })),
 ];
 
@@ -110,6 +119,7 @@ const availabilityLabels: Record<string, string> = {
             data-gallery-main-video
             hidden={gallery[0]?.type !== 'video'}
             src={gallery[0]?.type === 'video' ? gallery[0]?.mainSrc : undefined}
+            poster={gallery[0]?.type === 'video' ? gallery[0]?.posterSrc : undefined}
             controls
             playsinline
             preload="none"
@@ -135,12 +145,16 @@ const availabilityLabels: Record<string, string> = {
                 data-gallery-thumb
                 data-media-type={item.type}
                 data-main-src={item.mainSrc}
+                data-poster-src={item.posterSrc}
                 data-alt={item.alt}
                 aria-pressed={index === 0 ? 'true' : 'false'}
-                aria-label={item.type === 'video' ? `Play video ${index + 1}` : `Show photo ${index + 1}`}
+                aria-label={item.type === 'video' ? item.alt : `Show photo ${index + 1}`}
               >
                 {item.type === 'video' ? (
-                  <span class="instrument-detail__thumb-play" aria-hidden="true"></span>
+                  <span class="instrument-detail__thumb-video">
+                    <img src={item.thumbSrc} alt="" width="160" height="160" loading="lazy" decoding="async" />
+                    <span class="instrument-detail__thumb-play" aria-hidden="true"></span>
+                  </span>
                 ) : (
                   <img src={item.thumbSrc} alt="" width="160" height="160" loading="lazy" decoding="async" />
                 )}
@@ -160,6 +174,7 @@ const availabilityLabels: Record<string, string> = {
               {item.type === 'video' ? (
                 <video
                   src={item.mainSrc}
+                  poster={item.posterSrc}
                   controls
                   playsinline
                   preload="none"
@@ -237,6 +252,8 @@ const availabilityLabels: Record<string, string> = {
       if (isVideo) {
         mainVideo.pause();
         if (mainSrc && mainVideo.src !== mainSrc) mainVideo.src = mainSrc;
+        const posterSrc = thumb.dataset.posterSrc;
+        if (posterSrc) mainVideo.poster = posterSrc;
         mainImage.hidden = true;
         mainVideo.hidden = false;
         mainVideo.play().catch(() => {});
@@ -430,13 +447,28 @@ const availabilityLabels: Record<string, string> = {
     }
   }
 
+  .instrument-detail__thumb-video {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .instrument-detail__thumb-video img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
   .instrument-detail__thumb-play {
+    position: absolute;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 100%;
-    background: #2a1d12;
+    background: rgb(0 0 0 / 35%);
+    pointer-events: none;
   }
 
   .instrument-detail__thumb-play::after {

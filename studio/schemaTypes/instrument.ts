@@ -33,12 +33,48 @@ export default defineType({
       of: [defineArrayMember({type: 'image', options: {hotspot: true}})],
       validation: (Rule) => Rule.required().min(1),
     }),
-    defineField({
-      name: 'videos',
-      title: 'Videos (optional)',
-      type: 'array',
-      of: [defineArrayMember({type: 'file', options: {accept: 'video/*'}})],
+   defineField({
+  name: 'videos',
+  title: 'Videos (optional)',
+  type: 'array',
+  of: [
+    defineArrayMember({
+      type: 'object',
+      name: 'videoItem',
+      title: 'Video',
+      fields: [
+        defineField({
+          name: 'video',
+          title: 'Video File',
+          type: 'file',
+          options: {accept: 'video/*'},
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+          name: 'poster',
+          title: 'Poster Image',
+          type: 'image',
+          description: 'Still frame shown before this video plays.',
+          options: {hotspot: true},
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+          name: 'description',
+          title: 'Video Description',
+          type: 'string',
+          description: 'What this video demonstrates, e.g. "J-P playing the igil, showing its resonant low tone." Used as the visible caption and read by screen readers.',
+          validation: (Rule) => Rule.required().min(10),
+        }),
+      ],
+      preview: {
+        select: {title: 'description', media: 'poster'},
+        prepare({title, media}) {
+          return {title: title || 'Video', media}
+        },
+      },
     }),
+  ],
+}),
     defineField({
       name: 'shortDescription',
       title: 'Short description',

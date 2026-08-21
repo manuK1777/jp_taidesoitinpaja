@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "import": "node import-instruments.js"
+    "import": "node import-instruments.js",
+    "migrate:videos:dry": "node migrate-videos-to-objects.js --dry-run",
+    "migrate:videos": "node migrate-videos-to-objects.js"
   },
   "dependencies": {
     "@sanity/client": "^6.22.0",
