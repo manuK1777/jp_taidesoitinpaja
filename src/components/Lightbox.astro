@@ -28,6 +28,7 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
         />
       </div>
       <img class="lightbox__image" src="" alt="" />
+      <p class="lightbox__hint" aria-hidden="true"><span class="lightbox__hint-arrow">‹</span> Swipe for more <span class="lightbox__hint-arrow">›</span></p>
       <div class="lightbox__nav lightbox__nav--next">
         <WoodArrowButton
           direction="right"
@@ -52,6 +53,10 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
   const prevBtn = dialog.querySelector('.lightbox__nav--prev') as HTMLElement;
   const nextBtn = dialog.querySelector('.lightbox__nav--next') as HTMLElement;
   const mediaEl = dialog.querySelector('.lightbox__media') as HTMLElement;
+  const hintEl = dialog.querySelector('.lightbox__hint') as HTMLElement;
+
+  const STORAGE_KEY = 'lightbox-hint-dismissed';
+  const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
   let currentItems: LightboxItem[] = [];
   let currentIndex = 0;
@@ -75,6 +80,26 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
     currentIndex = startIndex;
     render();
     dialog.showModal();
+
+    const dismissed = (() => {
+      try {
+        return localStorage.getItem(STORAGE_KEY);
+      } catch {
+        return '1';
+      }
+    })();
+
+    if (isTouchDevice && groupItems.length > 1 && !dismissed) {
+      hintEl.classList.add('is-visible');
+    }
+  }
+
+  function dismissHint() {
+    if (!hintEl.classList.contains('is-visible')) return;
+    hintEl.classList.remove('is-visible');
+    try {
+      localStorage.setItem(STORAGE_KEY, '1');
+    } catch {}
   }
 
   function next() {
@@ -93,10 +118,12 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
 
   // Click on the backdrop (outside the image/controls) closes it
   dialog.addEventListener('click', (e) => {
+    dismissHint();
     if (e.target === dialog) dialog.close();
   });
 
   dialog.addEventListener('keydown', (e) => {
+    dismissHint();
     if (e.key === 'ArrowRight') next();
     if (e.key === 'ArrowLeft') prev();
     // Escape-to-close is native <dialog> behavior, no extra code needed
@@ -112,6 +139,7 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
   }, { passive: true });
 
   mediaEl.addEventListener('touchend', (e) => {
+    dismissHint();
     const touch = e.changedTouches[0];
     const deltaX = touch.clientX - touchStartX;
     const deltaY = touch.clientY - touchStartY;
@@ -270,9 +298,37 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
     right: var(--space-1);
   }
 
+  .lightbox__hint {
+    position: absolute;
+    bottom: var(--space-2);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    margin: 0;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    background: rgba(12, 9, 6, 0.72);
+    color: rgb(255 245 220);
+    font-size: 0.8rem;
+    line-height: 1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 250ms ease;
+  }
+
+  .lightbox__hint-arrow {
+    font-size: 2em;
+    vertical-align: middle;
+    margin-inline: 0.10em;
+  }
+
   @media (hover: none) and (pointer: coarse) {
     .lightbox__nav {
       display: none;
+    }
+
+    .lightbox__hint.is-visible {
+      opacity: 1;
     }
   }
 
