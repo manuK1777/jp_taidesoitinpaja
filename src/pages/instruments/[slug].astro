@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import WoodArrowButton from '../../components/WoodArrowButton.astro';
 import WoodenScrollBar from '../../components/WoodenScrollBar.astro';
+import Lightbox from '../../components/Lightbox.astro';
 import { PortableText } from 'astro-portabletext';
 import { sanityClient, urlFor } from '../../lib/sanity';
 
@@ -111,6 +112,9 @@ const availabilityLabels: Record<string, string> = {
             data-gallery-main-image
             src={gallery[0]?.type === 'image' ? gallery[0]?.mainSrc : undefined}
             alt={gallery[0]?.type === 'image' ? gallery[0]?.alt : ''}
+            aria-label={gallery[0]?.type === 'image' ? `Open ${gallery[0]?.alt} in lightbox` : ''}
+            tabindex="0"
+            role="button"
             hidden={gallery[0]?.type !== 'image'}
             loading="eager"
             decoding="async"
@@ -170,7 +174,7 @@ const availabilityLabels: Record<string, string> = {
       {gallery.length > 1 && (
         <div class="instrument-detail__mobile-carousel" data-mobile-carousel>
           {gallery.map((item: GalleryItem, index: number) => (
-            <div class={'instrument-detail__mobile-slide ' + (index === 0 ? 'is-active' : '')} style={'--mobile-backdrop: ' + (item.type === 'video' && item.posterSrc ? 'url(\'' + item.posterSrc + '\')' : 'none')}>
+            <div class={'instrument-detail__mobile-slide ' + (index === 0 ? 'is-active' : '')} data-main-src={item.type === 'image' ? item.mainSrc : undefined} style={'--mobile-backdrop: ' + (item.type === 'video' && item.posterSrc ? 'url(\'' + item.posterSrc + '\')' : 'none')}>
               {item.type === 'video' ? (
                 <video
                   src={item.mainSrc}
@@ -231,6 +235,23 @@ const availabilityLabels: Record<string, string> = {
       )}
     </div>
   </section>
+
+  <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+    {gallery
+      .filter((item: GalleryItem) => item.type === 'image')
+      .map((item: GalleryItem) => (
+        <button
+          type="button"
+          tabindex="-1"
+          data-lightbox-group="instrument-detail"
+          data-lightbox-src={item.mainSrc}
+          data-lightbox-alt={item.alt}
+          data-lightbox-caption={name}
+        />
+      ))}
+  </div>
+
+  <Lightbox />
 </Layout>
 
 <script>
@@ -247,6 +268,21 @@ const availabilityLabels: Record<string, string> = {
     const initialThumb = thumbs[0];
     const initialPoster = initialThumb.dataset.mediaType === 'video' ? initialThumb.dataset.posterSrc : '';
     mainImageFrame.style.setProperty('--backdrop', initialPoster ? `url('${initialPoster}')` : 'none');
+
+    mainImage.addEventListener('click', () => {
+      if (mainImage.hidden) return;
+      const src = mainImage.getAttribute('src');
+      if (!src) return;
+      const trigger = document.querySelector<HTMLElement>(`[data-lightbox-group="instrument-detail"][data-lightbox-src="${src}"]`);
+      if (trigger) trigger.click();
+    });
+
+    mainImage.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        mainImage.click();
+      }
+    });
 
     const setActive = (index: number) => {
       current = (index + thumbs.length) % thumbs.length;
@@ -269,6 +305,7 @@ const availabilityLabels: Record<string, string> = {
         mainImage.hidden = false;
         if (mainSrc) mainImage.src = mainSrc;
         mainImage.alt = alt;
+        mainImage.setAttribute('aria-label', `Open ${alt} in lightbox`);
       }
 
       thumbs.forEach((t, i) => t.setAttribute('aria-pressed', i === current ? 'true' : 'false'));
@@ -318,8 +355,17 @@ const availabilityLabels: Record<string, string> = {
 
 <script>
   document.querySelectorAll('[data-mobile-carousel]').forEach((carousel) => {
-    const slides = Array.from(carousel.querySelectorAll('.instrument-detail__mobile-slide'));
+    const slides = Array.from(carousel.querySelectorAll<HTMLElement>('.instrument-detail__mobile-slide'));
     if (slides.length < 2) return;
+
+    slides.forEach((slide) => {
+      const src = slide.dataset.mainSrc;
+      if (!src) return;
+      slide.addEventListener('click', () => {
+        const trigger = document.querySelector<HTMLElement>(`[data-lightbox-group="instrument-detail"][data-lightbox-src="${src}"]`);
+        if (trigger) trigger.click();
+      });
+    });
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -491,6 +537,7 @@ const availabilityLabels: Record<string, string> = {
 
   .instrument-detail__main-image img {
     object-fit: cover;
+    cursor: pointer;
   }
 
   .instrument-detail__main-image img[hidden],

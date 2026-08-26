@@ -51,6 +51,7 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
   const closeBtn = dialog.querySelector('.lightbox__close') as HTMLButtonElement;
   const prevBtn = dialog.querySelector('.lightbox__nav--prev') as HTMLElement;
   const nextBtn = dialog.querySelector('.lightbox__nav--next') as HTMLElement;
+  const mediaEl = dialog.querySelector('.lightbox__media') as HTMLElement;
 
   let currentItems: LightboxItem[] = [];
   let currentIndex = 0;
@@ -101,6 +102,26 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
     // Escape-to-close is native <dialog> behavior, no extra code needed
   });
 
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  mediaEl.addEventListener('touchstart', (e) => {
+    const touch = e.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+  }, { passive: true });
+
+  mediaEl.addEventListener('touchend', (e) => {
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - touchStartX;
+    const deltaY = touch.clientY - touchStartY;
+
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX < 0) next();
+      else prev();
+    }
+  }, { passive: true });
+
   // Wire up every trigger element present on the page, grouped by
   // data-lightbox-group. Runs once on load — if you add gallery items
   // dynamically after this, re-run this same setup logic.
@@ -108,7 +129,6 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
     const triggers = Array.from(
       document.querySelectorAll<HTMLElement>('[data-lightbox-group]')
     );
-    const mobileLightbox = window.matchMedia('(max-width: 639px)');
 
     const groups = new Map<string, LightboxItem[]>();
     triggers.forEach((el) => {
@@ -128,7 +148,7 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
       indexWithinGroup.set(group, idx + 1);
 
       const handler = () => {
-        if (!mobileLightbox.matches) open(groups.get(group)!, idx);
+        open(groups.get(group)!, idx);
       };
       el.addEventListener('click', handler);
 
@@ -146,18 +166,6 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
         });
       }
     });
-
-    const syncMobileState = () => {
-      triggers.forEach((el) => {
-        if (el instanceof HTMLButtonElement) {
-          el.disabled = mobileLightbox.matches;
-        }
-      });
-      if (mobileLightbox.matches && dialog.open) dialog.close();
-    };
-
-    syncMobileState();
-    mobileLightbox.addEventListener('change', syncMobileState);
   }
 
   initTriggers();
@@ -260,6 +268,12 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
 
   .lightbox__nav--next {
     right: var(--space-1);
+  }
+
+  @media (hover: none) and (pointer: coarse) {
+    .lightbox__nav {
+      display: none;
+    }
   }
 
   .lightbox__counter {
