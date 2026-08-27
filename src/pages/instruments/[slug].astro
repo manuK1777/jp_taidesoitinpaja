@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import WoodArrowButton from '../../components/WoodArrowButton.astro';
 import WoodenScrollBar from '../../components/WoodenScrollBar.astro';
 import Lightbox from '../../components/Lightbox.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { PortableText } from 'astro-portabletext';
 import { sanityClient, urlFor } from '../../lib/sanity';
 
@@ -96,6 +97,13 @@ const availabilityLabels: Record<string, string> = {
 ---
 
 <Layout title={name}>
+  <Breadcrumbs
+    items={[
+      { label: 'Home', href: '/' },
+      { label: 'Instruments', href: '/instruments' },
+      { label: name },
+    ]}
+  />
   <section class="instrument-detail container">
     <div class="instrument-detail__gallery" data-instrument-gallery data-has-multiple={gallery.length > 1 ? 'true' : 'false'}>
       <div class="instrument-detail__main-viewer">
@@ -420,7 +428,8 @@ const availabilityLabels: Record<string, string> = {
   .instrument-detail {
     display: grid;
     gap: var(--space-4);
-    padding-block: var(--space-5);
+    padding-top: var(--space-2);
+    padding-bottom: var(--space-5);
     grid-template-columns: minmax(0, 1fr);
   }
 
