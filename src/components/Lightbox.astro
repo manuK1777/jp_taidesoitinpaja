@@ -216,6 +216,8 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
 
   .lightbox[open] {
     display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
     align-items: center;
     justify-content: center;
   }
@@ -241,7 +243,7 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
   }
 
   .lightbox__caption {
-    color: var(--color-text-muted);
+    color: var(--color-brass);
     text-align: center;
   }
 
@@ -333,15 +335,12 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
   }
 
   .lightbox__counter {
-    position: fixed;
-    bottom: var(--space-2);
-    left: 50%;
-    transform: translateX(-50%);
     font-family: var(--font-mono);
     font-size: 0.8rem;
     letter-spacing: 0.06em;
-    color: var(--color-text-muted);
+    color: var(--color-brass);
     margin: 0;
+    text-align: center;
   }
 
 </style>
