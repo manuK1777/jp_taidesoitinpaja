@@ -39,7 +39,8 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
     </div>
     <figcaption class="lightbox__caption"></figcaption>
   </figure>
-  <p class="lightbox__counter"></p>
+  <div class="lightbox__dots" hidden></div>
+  <p class="lightbox__counter" hidden></p>
 </dialog>
 
 <script>
@@ -48,6 +49,7 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
   const dialog = document.getElementById('lightbox') as HTMLDialogElement;
   const imageEl = dialog.querySelector('.lightbox__image') as HTMLImageElement;
   const captionEl = dialog.querySelector('.lightbox__caption') as HTMLElement;
+  const dotsEl = dialog.querySelector('.lightbox__dots') as HTMLElement;
   const counterEl = dialog.querySelector('.lightbox__counter') as HTMLElement;
   const closeBtn = dialog.querySelector('.lightbox__close') as HTMLButtonElement;
   const prevBtn = dialog.querySelector('.lightbox__nav--prev') as HTMLElement;
@@ -69,6 +71,9 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
     }
     imageEl.alt = item.alt;
     captionEl.textContent = item.caption;
+    dotsEl.querySelectorAll<HTMLElement>('.lightbox__dot').forEach((dot, i) => {
+      dot.setAttribute('aria-pressed', i === currentIndex ? 'true' : 'false');
+    });
     counterEl.textContent = `${currentIndex + 1} / ${currentItems.length}`;
   }
 
@@ -78,6 +83,23 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
   function open(groupItems: LightboxItem[], startIndex: number) {
     currentItems = groupItems;
     currentIndex = startIndex;
+
+    const useDots = groupItems.length <= 10;
+    dotsEl.hidden = !useDots;
+    counterEl.hidden = useDots;
+
+    dotsEl.innerHTML = '';
+    if (useDots) {
+      groupItems.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'lightbox__dot';
+        dot.setAttribute('aria-label', `Go to image ${i + 1}`);
+        dot.addEventListener('click', () => goTo(i));
+        dotsEl.appendChild(dot);
+      });
+    }
+
     render();
     dialog.showModal();
 
@@ -109,6 +131,11 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
 
   function prev() {
     currentIndex = (currentIndex - 1 + currentItems.length) % currentItems.length;
+    render();
+  }
+
+  function goTo(index: number) {
+    currentIndex = (index + currentItems.length) % currentItems.length;
     render();
   }
 
@@ -217,7 +244,7 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
   .lightbox[open] {
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
+    gap: 0.15rem;
     align-items: center;
     justify-content: center;
   }
@@ -332,6 +359,35 @@ import WoodenCloseButton from './WoodenCloseButton.astro';
     .lightbox__hint.is-visible {
       opacity: 1;
     }
+  }
+
+  .lightbox__dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-1);
+    margin: 0;
+  }
+
+  :global(.lightbox__dot) {
+    width: 10px;
+    height: 10px;
+    min-width: 10px;
+    min-height: 10px;
+    flex: 0 0 auto;
+    border: 0;
+    border-radius: 50%;
+    padding: 0;
+    background: var(--color-brass);
+    opacity: 0.35;
+    cursor: pointer;
+    transition: opacity 180ms ease;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  :global(.lightbox__dot[aria-pressed="true"]) {
+    opacity: 1;
   }
 
   .lightbox__counter {

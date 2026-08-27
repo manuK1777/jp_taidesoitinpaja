@@ -534,13 +534,18 @@ const availabilityLabels: Record<string, string> = {
     .instrument-detail__dot {
       width: 10px;
       height: 10px;
+      min-width: 10px;
+      min-height: 10px;
+      flex: 0 0 auto;
       border: 0;
-      border-radius: 999px;
+      border-radius: 50%;
       padding: 0;
       background: var(--color-green);
       opacity: 0.35;
       cursor: pointer;
       transition: opacity 180ms ease;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     .instrument-detail__dot[aria-pressed="true"] {
