@@ -195,6 +195,20 @@ const availabilityLabels: Record<string, string> = {
           ))}
         </div>
       )}
+
+      {gallery.length > 1 && (
+        <div class="instrument-detail__dots" data-mobile-dots>
+          {gallery.map((_, index: number) => (
+            <button
+              type="button"
+              class="instrument-detail__dot"
+              data-dot-index={index}
+              aria-pressed={index === 0 ? 'true' : 'false'}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </div>
 
     <div class="instrument-detail__info">
@@ -356,14 +370,34 @@ const availabilityLabels: Record<string, string> = {
 <script>
   document.querySelectorAll('[data-mobile-carousel]').forEach((carousel) => {
     const slides = Array.from(carousel.querySelectorAll<HTMLElement>('.instrument-detail__mobile-slide'));
-    if (slides.length < 2) return;
+    const dots = Array.from(
+      (carousel.parentElement?.querySelector<HTMLElement>('[data-mobile-dots]'))?.querySelectorAll<HTMLButtonElement>('[data-dot-index]') ?? []
+    );
+    if (slides.length < 2 || dots.length === 0) return;
 
-    slides.forEach((slide) => {
+    const updateDots = () => {
+      const activeIndex = slides.findIndex((s) => s.classList.contains('is-active'));
+      if (activeIndex === -1) return;
+      dots.forEach((dot, i) => {
+        dot.setAttribute('aria-pressed', i === activeIndex ? 'true' : 'false');
+      });
+    };
+
+    slides.forEach((slide, i) => {
       const src = slide.dataset.mainSrc;
-      if (!src) return;
-      slide.addEventListener('click', () => {
-        const trigger = document.querySelector<HTMLElement>(`[data-lightbox-group="instrument-detail"][data-lightbox-src="${src}"]`);
-        if (trigger) trigger.click();
+      if (src) {
+        slide.addEventListener('click', () => {
+          const trigger = document.querySelector<HTMLElement>(`[data-lightbox-group="instrument-detail"][data-lightbox-src="${src}"]`);
+          if (trigger) trigger.click();
+        });
+      }
+
+      dots[i]?.addEventListener('click', () => {
+        const target = slides[i];
+        const carouselRect = carousel.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        const scrollLeft = carousel.scrollLeft + (targetRect.left - carouselRect.left) - (carousel.clientWidth - target.clientWidth) / 2;
+        carousel.scrollTo({ left: scrollLeft, behavior: 'smooth' });
       });
     });
 
@@ -372,11 +406,13 @@ const availabilityLabels: Record<string, string> = {
         entries.forEach((entry) => {
           entry.target.classList.toggle('is-active', entry.isIntersecting);
         });
+        updateDots();
       },
       { root: carousel, threshold: 0.5 }
     );
 
     slides.forEach((slide) => observer.observe(slide));
+    updateDots();
   });
 </script>
 
@@ -419,7 +455,8 @@ const availabilityLabels: Record<string, string> = {
     }
   }
 
-  .instrument-detail__mobile-carousel {
+  .instrument-detail__mobile-carousel,
+  .instrument-detail__dots {
     display: none;
   }
 
@@ -483,6 +520,31 @@ const availabilityLabels: Record<string, string> = {
 
     .instrument-detail__mobile-slide img {
       object-fit: cover;
+    }
+
+    .instrument-detail__dots {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--space-1);
+      margin-top: var(--space-2);
+      width: 100%;
+    }
+
+    .instrument-detail__dot {
+      width: 10px;
+      height: 10px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0;
+      background: var(--color-green);
+      opacity: 0.35;
+      cursor: pointer;
+      transition: opacity 180ms ease;
+    }
+
+    .instrument-detail__dot[aria-pressed="true"] {
+      opacity: 1;
     }
   }
 
