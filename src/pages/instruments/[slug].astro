@@ -1,7 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import WoodArrowButton from '../../components/WoodArrowButton.astro';
-import WoodenScrollBar from '../../components/WoodenScrollBar.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { PortableText } from 'astro-portabletext';
@@ -149,6 +148,11 @@ const availabilityLabels: Record<string, string> = {
 
       {gallery.length > 1 && (
         <div class="instrument-detail__carousel">
+          <button type="button" class="instrument-detail__thumbs-chevron instrument-detail__thumbs-chevron--up" data-chevron="up" aria-label="Scroll up" hidden>
+            <svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 8 L8 2 L14 8" />
+            </svg>
+          </button>
           <div class="instrument-detail__thumbs" id="instrument-thumbs-track">
             {gallery.map((item: GalleryItem, index: number) => (
               <button
@@ -173,9 +177,11 @@ const availabilityLabels: Record<string, string> = {
               </button>
             ))}
           </div>
-          {gallery.length > 6 && (
-            <WoodenScrollBar for="#instrument-thumbs-track" showText={false} />
-          )}
+          <button type="button" class="instrument-detail__thumbs-chevron instrument-detail__thumbs-chevron--down" data-chevron="down" aria-label="Scroll down" hidden>
+            <svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 2 L8 8 L14 2" />
+            </svg>
+          </button>
         </div>
       )}
 
@@ -286,6 +292,29 @@ const availabilityLabels: Record<string, string> = {
 
     let current = 0;
     const track = gallery.querySelector<HTMLElement>('#instrument-thumbs-track');
+    const upChevron = gallery.querySelector<HTMLElement>('[data-chevron="up"]');
+    const downChevron = gallery.querySelector<HTMLElement>('[data-chevron="down"]');
+
+    const updateChevrons = () => {
+      if (!track || !upChevron || !downChevron) return;
+      const canScroll = track.scrollHeight > track.clientHeight;
+      upChevron.hidden = !canScroll || track.scrollTop <= 0;
+      downChevron.hidden = !canScroll || track.scrollTop + track.clientHeight >= track.scrollHeight - 1;
+    };
+
+    if (track) {
+      track.addEventListener('scroll', updateChevrons);
+      window.addEventListener('resize', updateChevrons);
+      new ResizeObserver(updateChevrons).observe(track);
+      updateChevrons();
+    }
+
+    upChevron?.addEventListener('click', () => {
+      if (track) track.scrollTop -= track.clientHeight * 0.5;
+    });
+    downChevron?.addEventListener('click', () => {
+      if (track) track.scrollTop += track.clientHeight * 0.5;
+    });
 
     const initialThumb = thumbs[0];
     const initialPoster = initialThumb.dataset.mediaType === 'video' ? initialThumb.dataset.posterSrc : '';
@@ -640,18 +669,28 @@ const availabilityLabels: Record<string, string> = {
     width: 100%;
   }
 
-  .instrument-detail__carousel :global(.wood-scrollbar) {
-    width: 100%;
-  }
-
   .instrument-detail__thumbs::-webkit-scrollbar {
     display: none;
   }
 
-  @media (hover: none) and (pointer: coarse) {
-    .instrument-detail__carousel :global(.wood-scrollbar) {
-      display: none;
-    }
+  .instrument-detail__thumbs-chevron {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    padding: 0;
+    border-radius: 4px;
+    border: 1px solid var(--color-brass);
+    background:color-mix(in oklch, var(--color-brass) 12%, transparent);
+    color: var(--color-dark-brass);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .instrument-detail__thumbs-chevron[hidden] {
+    display: none;
   }
 
   .instrument-detail__thumb-video {
@@ -701,8 +740,6 @@ const availabilityLabels: Record<string, string> = {
     height: 70px;
     overflow: hidden;
     cursor: pointer;
-    /* opacity: 0.75;
-    transition: opacity 180ms ease, transform 180ms ease; */
   }
 
   .instrument-detail__thumb img {
@@ -713,14 +750,13 @@ const availabilityLabels: Record<string, string> = {
   }
 
   .instrument-detail__thumb:hover {
-    /* opacity: 0.85; */
      transform: scale(1.1);
     z-index: 1;
   }
 
   .instrument-detail__thumb[aria-pressed="true"] {
     opacity: 1;
-    border: 3px solid rgba(221, 88, 26, 0.95);
+    border: 3px solid var(--color-brass);
     z-index: 1;
   }
 
@@ -826,6 +862,7 @@ const availabilityLabels: Record<string, string> = {
       width: auto;
       display: flex;
       flex-direction: column;
+      align-items: center;
       gap: var(--space-2);
       max-height: 600px;
     }
@@ -833,10 +870,6 @@ const availabilityLabels: Record<string, string> = {
     .instrument-detail__thumb {
       width: 90px;
       height: 90px;
-    }
-
-    .instrument-detail__carousel :global(.wood-scrollbar) {
-      display: none;
     }
 
     .instrument-detail__thumbs {

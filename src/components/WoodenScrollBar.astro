@@ -1,17 +1,24 @@
 ---
-// Custom scrollbar for a horizontally-scrollable element.
+// Custom scrollbar for a horizontally- or vertically-scrollable element.
 // Point it at the element it controls via the `for` prop (a CSS selector,
 // e.g. an id like "#my-track"). The thumb tracks scroll position/size and
 // can be dragged to scroll the target.
 interface Props {
   for: string;
   showText?: boolean;
+  vertical?: boolean;
 }
 
-const { for: target, showText = true } = Astro.props;
+const { for: target, showText = true, vertical = false } = Astro.props;
 ---
 
-<div class="wood-scrollbar" data-wood-scrollbar data-scrollbar-target={target} aria-hidden="true">
+<div
+  class:list={['wood-scrollbar', { 'wood-scrollbar--vertical': vertical }]}
+  data-wood-scrollbar
+  data-scrollbar-target={target}
+  data-scrollbar-vertical={vertical ? 'true' : undefined}
+  aria-hidden="true"
+>
   {showText && <p class="wood-scrollbar-text">Scroll to browse</p>}
   <div class="wood-scrollbar-track">
     <div class="wood-scrollbar-thumb"></div>
@@ -29,22 +36,44 @@ const { for: target, showText = true } = Astro.props;
       const track = bar.querySelector<HTMLElement>('.wood-scrollbar-track');
       if (!target || !thumb || !track) return;
 
+      const isVertical = 'scrollbarVertical' in bar.dataset;
+
       const update = () => {
-        const { scrollWidth, clientWidth, scrollLeft } = target;
-        if (scrollWidth <= clientWidth) {
-          bar.hidden = true;
-          return;
+        if (isVertical) {
+          const { scrollHeight, clientHeight, scrollTop } = target;
+          if (scrollHeight <= clientHeight) {
+            bar.hidden = true;
+            return;
+          }
+          bar.hidden = false;
+
+          const ratio = clientHeight / scrollHeight;
+          const heightPct = Math.max(8, Math.min(40, ratio * 70));
+          const maxScroll = scrollHeight - clientHeight;
+          const topPct = (scrollTop / maxScroll) * (100 - heightPct);
+
+          thumb.style.height = `${heightPct}%`;
+          thumb.style.top = `${topPct}%`;
+          thumb.style.width = '';
+          thumb.style.left = '';
+        } else {
+          const { scrollWidth, clientWidth, scrollLeft } = target;
+          if (scrollWidth <= clientWidth) {
+            bar.hidden = true;
+            return;
+          }
+          bar.hidden = false;
+
+          const ratio = clientWidth / scrollWidth;
+          const widthPct = Math.max(8, Math.min(40, ratio * 70));
+          const maxScroll = scrollWidth - clientWidth;
+          const leftPct = (scrollLeft / maxScroll) * (100 - widthPct);
+
+          thumb.style.width = `${widthPct}%`;
+          thumb.style.left = `${leftPct}%`;
+          thumb.style.height = '';
+          thumb.style.top = '';
         }
-        bar.hidden = false;
-
-        // const widthPct = (clientWidth / scrollWidth) * 80;
-        const ratio = clientWidth / scrollWidth;
-        const widthPct = Math.max(8, Math.min(40, ratio * 70));
-        const maxScroll = scrollWidth - clientWidth;
-        const leftPct = (scrollLeft / maxScroll) * (100 - widthPct);
-
-        thumb.style.width = `${widthPct}%`;
-        thumb.style.left = `${leftPct}%`;
       };
 
       let ticking = false;
@@ -64,14 +93,24 @@ const { for: target, showText = true } = Astro.props;
       let dragging = false;
       let dragStartX = 0;
       let startScrollLeft = 0;
+      let dragStartY = 0;
+      let startScrollTop = 0;
 
       const onPointerMove = (e: PointerEvent) => {
         if (!dragging) return;
-        const scrollableTrackWidth = track.clientWidth - thumb.clientWidth;
-        const maxScroll = target.scrollWidth - target.clientWidth;
-        const deltaX = e.clientX - dragStartX;
-        const scrollDelta = scrollableTrackWidth > 0 ? (deltaX / scrollableTrackWidth) * maxScroll : 0;
-        target.scrollLeft = startScrollLeft + scrollDelta;
+        if (isVertical) {
+          const scrollableTrackHeight = track.clientHeight - thumb.clientHeight;
+          const maxScroll = target.scrollHeight - target.clientHeight;
+          const deltaY = e.clientY - dragStartY;
+          const scrollDelta = scrollableTrackHeight > 0 ? (deltaY / scrollableTrackHeight) * maxScroll : 0;
+          target.scrollTop = startScrollTop + scrollDelta;
+        } else {
+          const scrollableTrackWidth = track.clientWidth - thumb.clientWidth;
+          const maxScroll = target.scrollWidth - target.clientWidth;
+          const deltaX = e.clientX - dragStartX;
+          const scrollDelta = scrollableTrackWidth > 0 ? (deltaX / scrollableTrackWidth) * maxScroll : 0;
+          target.scrollLeft = startScrollLeft + scrollDelta;
+        }
       };
 
       const onPointerUp = () => {
@@ -82,8 +121,13 @@ const { for: target, showText = true } = Astro.props;
 
       thumb.addEventListener('pointerdown', (e) => {
         dragging = true;
-        dragStartX = e.clientX;
-        startScrollLeft = target.scrollLeft;
+        if (isVertical) {
+          dragStartY = e.clientY;
+          startScrollTop = target.scrollTop;
+        } else {
+          dragStartX = e.clientX;
+          startScrollLeft = target.scrollLeft;
+        }
         window.addEventListener('pointermove', onPointerMove);
         window.addEventListener('pointerup', onPointerUp);
       });
@@ -133,5 +177,27 @@ const { for: target, showText = true } = Astro.props;
 
   .wood-scrollbar-thumb:active {
     cursor: grabbing;
+  }
+
+  .wood-scrollbar--vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 26px;
+    height: auto;
+    align-self: stretch;
+  }
+
+  .wood-scrollbar--vertical .wood-scrollbar-track {
+    width: 14px;
+    height: 100%;
+  }
+
+  .wood-scrollbar--vertical .wood-scrollbar-thumb {
+    top: 0;
+    left: 50%;
+    width: 26px;
+    height: auto;
+    transform: translateX(-50%);
   }
 </style>
