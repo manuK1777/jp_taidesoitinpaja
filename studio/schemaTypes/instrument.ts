@@ -20,6 +20,13 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'badge',
+      title: 'Badge',
+      type: 'string',
+      description: 'Optional tag shown on the instrument card, e.g. "New Arrival", "Special Edition"',
+      validation: (Rule) => Rule.max(24).warning('Keep badges short so they fit the card layout'),
+    }),
+    defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',

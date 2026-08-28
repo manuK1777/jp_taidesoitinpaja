@@ -10,6 +10,7 @@ const instruments = await sanityClient.fetch(`
     price,
     "categoryTitle": instrumentType->title,
     shortDescription,
+    badge,
     "images": images[0...2]
   }
 `);

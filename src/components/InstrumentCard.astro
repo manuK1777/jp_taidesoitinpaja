@@ -10,9 +10,10 @@ interface Props {
   shortDescription?: string;
   image?: any;
   images?: any[];
+  badge?: string;
 }
 
-const { name, slug, price, categoryTitle, shortDescription, image } = Astro.props;
+const { name, slug, price, categoryTitle, shortDescription, image, badge } = Astro.props;
 const images = Astro.props.images ?? [];
 const primaryImage = image ?? images[0];
 const hoverImage = images[1] ?? primaryImage;
@@ -30,6 +31,7 @@ const hoverImageUrl = hoverImage && hoverImage !== primaryImage
   data-price={price ?? ''}
 >
   <div class="instrument-card__image">
+    {badge && <span class="instrument-card__badge">{badge}</span>}
     {imageUrl && <Image class="instrument-card__primary" src={imageUrl} alt={name} width={600} height={750} loading="lazy" />}
     {hoverImageUrl && <Image class="instrument-card__hover" src={hoverImageUrl} alt={name} width={600} height={750} loading="lazy" />}
   </div>
@@ -154,5 +156,23 @@ const hoverImageUrl = hoverImage && hoverImage !== primaryImage
     font-weight: 700;
     font-size: 1rem;
     color: oklch(0.92 0.015 80);
+  }
+
+  .instrument-card__badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 2;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.35em 0.75em;
+    border-radius: 999px;
+    background: oklch(0.7 0.13 80 / 0.65);
+    color: var(--color-bg);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 25%);
+    pointer-events: none;
   }
 </style>
