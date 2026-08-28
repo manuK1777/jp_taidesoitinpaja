@@ -1,6 +1,5 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import WoodArrowButton from '../../components/WoodArrowButton.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { PortableText } from 'astro-portabletext';
@@ -107,12 +106,16 @@ const availabilityLabels: Record<string, string> = {
     <div class="instrument-detail__gallery" data-instrument-gallery data-has-multiple={gallery.length > 1 ? 'true' : 'false'}>
       <div class="instrument-detail__main-viewer">
         {gallery.length > 1 && (
-          <WoodArrowButton
-            direction="left"
-            ariaLabel="Previous photo"
-            gradientId="instrument-gallery-wood-gradient-left"
-            scrollDirection="left"
-          />
+          <button
+            type="button"
+            class="instrument-detail__main-chevron"
+            data-scroll="left"
+            aria-label="Previous photo"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 2 L4 8 L10 14" />
+            </svg>
+          </button>
         )}
         <div class="instrument-detail__main-image">
           <img
@@ -137,12 +140,16 @@ const availabilityLabels: Record<string, string> = {
           />
         </div>
         {gallery.length > 1 && (
-          <WoodArrowButton
-            direction="right"
-            ariaLabel="Next photo"
-            gradientId="instrument-gallery-wood-gradient-right"
-            scrollDirection="right"
-          />
+          <button
+            type="button"
+            class="instrument-detail__main-chevron"
+            data-scroll="right"
+            aria-label="Next photo"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2 L12 8 L6 14" />
+            </svg>
+          </button>
         )}
       </div>
 
@@ -483,10 +490,6 @@ const availabilityLabels: Record<string, string> = {
     .instrument-detail__main-viewer {
       gap: var(--space-1);
     }
-    .instrument-detail__main-viewer :global(.wood-arrow-btn) {
-      width: 22px;
-      height: 22px;
-    }
     [data-has-multiple="true"] .instrument-detail__main-viewer,
     [data-has-multiple="true"] .instrument-detail__carousel {
       display: none;
@@ -591,10 +594,8 @@ const availabilityLabels: Record<string, string> = {
     }
   }
 
-  .instrument-detail__main-viewer :global(.wood-arrow-btn) {
+  .instrument-detail__main-viewer .instrument-detail__main-chevron {
     flex: 0 0 auto;
-    width: 40px;
-    height: 40px;
   }
 
   .instrument-detail__main-image {
@@ -673,17 +674,17 @@ const availabilityLabels: Record<string, string> = {
     display: none;
   }
 
-  .instrument-detail__thumbs-chevron {
+  .instrument-detail__thumbs-chevron,
+  .instrument-detail__main-chevron {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 32px;
     height: 32px;
-    border: none;
     padding: 0;
     border-radius: 4px;
     border: 1px solid var(--color-brass);
-    background:color-mix(in oklch, var(--color-brass) 12%, transparent);
+    background: color-mix(in oklch, var(--color-brass) 12%, transparent);
     color: var(--color-dark-brass);
     font: inherit;
     cursor: pointer;
@@ -691,6 +692,11 @@ const availabilityLabels: Record<string, string> = {
 
   .instrument-detail__thumbs-chevron[hidden] {
     display: none;
+  }
+
+  .instrument-detail__thumbs-chevron svg,
+  .instrument-detail__main-chevron svg {
+    filter: drop-shadow(0 2px 2px rgb(0 0 0 / 20%));
   }
 
   .instrument-detail__thumb-video {
@@ -791,18 +797,14 @@ const availabilityLabels: Record<string, string> = {
     text-transform: uppercase;
     padding: 0.35em 0.8em;
     border-radius: 999px;
+    background: color-mix(in oklch, rgba(213, 249, 196, 1) 12%, transparent);
     border: 1px solid var(--color-brass);
-    color: var(--color-brass);
+    color: var(--color-dark-brass);
   }
 
   .instrument-detail__availability--sold {
     color: var(--color-oxblood);
     border-color: var(--color-oxblood);
-  }
-
-  .instrument-detail__availability--in-stock {
-    color: var(--color-dark-brass);
-    background: color-mix(in oklch, var(--color-brass) 12%, transparent);
   }
 
   .instrument-detail__text {

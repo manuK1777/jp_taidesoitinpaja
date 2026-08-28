@@ -18,6 +18,7 @@
   --color-oxblood: oklch(40% 0.1 30);       /* rare accent — use sparingly */
   --color-spruce-black: oklch(15% 0.02 180); /* deep spruce/black */
   --color-green: oklch(0.2492 0.0161 168.71 / 0.95); /* green */
+  --color-light-green: rgb(102 127 91 / 79%);
 
   --color-text: var(--color-cream);
   --color-text-muted: oklch(35% 0.02 63);
