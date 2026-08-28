@@ -8,8 +8,8 @@ interface Props {
 
 const { direction, ariaLabel, gradientId, scrollDirection } = Astro.props;
 const arrowPath = direction === 'left'
-  ? 'M46 21 H27 V13 L9 28 L27 43 V35 H46 Z'
-  : 'M10 21 H29 V13 L47 28 L29 43 V35 H10 Z';
+  ? 'M38 18 L28 28 L38 38'
+  : 'M18 18 L28 28 L18 38';
 ---
 
 <button
@@ -20,16 +20,15 @@ const arrowPath = direction === 'left'
 >
   <svg viewBox="0 0 56 56" aria-hidden="true">
     <defs>
-      <linearGradient id={gradientId} x1="10" y1="13" x2="46" y2="43" gradientUnits="userSpaceOnUse">
+      <linearGradient id={gradientId} x1="14" y1="14" x2="42" y2="42" gradientUnits="userSpaceOnUse">
         <stop offset="0%" stop-color="#d6af77" />
         <stop offset="52%" stop-color="#a87543" />
         <stop offset="100%" stop-color="#714524" />
       </linearGradient>
     </defs>
-    <path d={arrowPath} fill="#4a2f1c" transform="translate(1.4,2.2)" />
-    <path class="wood-arrow-btn__face" d={arrowPath} fill={`url(#${gradientId})`} stroke="#5c3d24" stroke-width="1.5" stroke-linejoin="round" />
-    <path d={arrowPath} fill="none" stroke="rgb(255 245 220 / 28%)" stroke-width="1" stroke-linejoin="round" transform="translate(0,-1)" />
-    <path d="M17 25 H34 M17 31 H34" fill="none" stroke="#5c3d24" stroke-width="0.65" opacity="0.32" />
+    <path d={arrowPath} fill="none" stroke="#4a2f1c" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" transform="translate(1.4,2.2)" />
+    <path class="wood-arrow-btn__face" d={arrowPath} fill="none" stroke={`url(#${gradientId})`} stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+    <path d={arrowPath} fill="none" stroke="rgb(255 245 220 / 28%)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(0,-1.2)" />
   </svg>
 </button>
 

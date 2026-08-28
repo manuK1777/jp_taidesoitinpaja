@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import { urlFor } from '../lib/sanity';
-import WoodArrowButton from './WoodArrowButton.astro';
+import WoodenArrowButton from './WoodenArrowButton.astro';
 import WoodenScrollBar from './WoodenScrollBar.astro';
 
 interface GalleryItem {
@@ -34,7 +34,7 @@ const galleryItems = items.map((item, index) => ({
     <h2>{title}</h2>
   </div>
   <div class="gallery-filmstrip__carousel">
-    <WoodArrowButton
+    <WoodenArrowButton
       direction="left"
       ariaLabel="Scroll gallery left"
       gradientId={`${galleryId}-wood-gradient-left`}
@@ -62,7 +62,7 @@ const galleryItems = items.map((item, index) => ({
         </button>
       ))}
     </div>
-    <WoodArrowButton
+    <WoodenArrowButton
       direction="right"
       ariaLabel="Scroll gallery right"
       gradientId={`${galleryId}-wood-gradient-right`}
