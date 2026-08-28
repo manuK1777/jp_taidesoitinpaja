@@ -42,7 +42,7 @@ const featuredInstruments = await sanityClient.fetch(`
     price,
     "categoryTitle": instrumentType->title,
     shortDescription,
-    "image": images[0]
+    "images": images[0...2]
   }
 `);
 
@@ -92,7 +92,7 @@ const upcomingWorkshops = await sanityClient.fetch(`
             price={inst.price}
             categoryTitle={inst.categoryTitle}
             shortDescription={inst.shortDescription}
-            image={inst.image}
+            images={inst.images}
           />
         ))}
       </div>
