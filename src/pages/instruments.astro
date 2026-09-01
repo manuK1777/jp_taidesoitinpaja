@@ -28,7 +28,7 @@ const instrumentTypes = [...new Set(categoryTitles)].map((title) => ({ title }))
       <div class="instruments-band__header">
         <div>
           <p class="eyebrow" id="instruments-eyebrow">Collection</p>
-          <h2 id="instruments-heading">Folk Instruments for Sale</h2>
+          <h1 id="instruments-heading">Folk Instruments for Sale</h1>
         </div>
       </div>
       <InstrumentsBrowser instruments={instruments} types={instrumentTypes} />
@@ -37,6 +37,14 @@ const instrumentTypes = [...new Set(categoryTitles)].map((title) => ({ title }))
 </Layout>
 
 <style>
+
+  h1 {
+    font-size: 2.85rem;
+    text-shadow:
+      -1px -1px 1px oklch(20% 0.02 63 / 0.18),   
+      1px  1px 1px oklch(60% 0.03 63 / 0.7);
+  }
+
   .instruments-band {
     background:
       linear-gradient(rgb(36 27 20 / 12%), rgb(36 27 20 / 32%)),
