@@ -65,8 +65,8 @@ const upcomingWorkshops = await sanityClient.fetch(`
 <Layout title="Home">
   <section class="hero container">
     <div class="hero__text">
-      <h1>Unveiling<br/>musical<br/>magic</h1>
-      <p class="hero__sub">Handcrafted Unique Instruments</p>
+      <h1>Handcrafted<br/>Unique<br/>Instruments</h1>
+      <p class="hero__sub">Unveiling musical magic</p>
       <a href="/our-story" class="btn btn--solid">Learn More</a>
     </div>
     <div class="hero__image-wrap">
@@ -176,7 +176,7 @@ const upcomingWorkshops = await sanityClient.fetch(`
   /* Hero */
   .hero {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--space-6);
     align-items: center;
     padding-block: var(--space-5) var(--space-5);
   }
@@ -197,8 +197,15 @@ const upcomingWorkshops = await sanityClient.fetch(`
      1px  1px 1px oklch(55% 0.04 60 / 0.7);   /* highlight: lighter, same hue */
   }
   .hero__sub {
-    margin-block: var(--space-2) var(--space-3);
-    font-size: 1.1rem;
+   font-family: var(--font-display);
+   display: block;
+   margin-block: var(--space-3) var(--space-3);
+   font-size: 1.2rem;
+   color: var(--color-text-muted);
+   text-shadow:
+    -1px -1px 1px oklch(20% 0.02 63 / 0.15),
+     1px  1px 1px oklch(80% 0.03 63 / 0.5);
+   font-weight: 400;
   }
 
   .hero__image-wrap {
