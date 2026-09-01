@@ -176,7 +176,15 @@ const hoverImageUrl = hoverImage && hoverImage !== primaryImage
     pointer-events: none;
   }
 
-  @media (max-width: 380px) {
+   @media (min-width: 381px) and (max-width: 460px) {
+    .instrument-card__badge {
+      font-size: 0.65rem;
+      top: 0.50rem;
+      left: 0.50rem;
+    }
+  }
+
+    @media (min-width: 327px) and (max-width: 380px) {
     .instrument-card__badge {
       font-size: 0.55rem;
       top: 0.25rem;
@@ -184,11 +192,11 @@ const hoverImageUrl = hoverImage && hoverImage !== primaryImage
     }
   }
 
-   @media (min-width: 381px) and (max-width: 460px) {
+  @media (max-width: 326px) {
     .instrument-card__badge {
-      font-size: 0.65rem;
-      top: 0.50rem;
-      left: 0.50rem;
+      padding: 0.20em 0.50em;
+      white-space: nowrap;
+      left: 0rem;
     }
   }
 </style>
