@@ -181,6 +181,9 @@ const upcomingWorkshops = await sanityClient.fetch(`
     padding-block: var(--space-5) var(--space-5);
   }
   @media (max-width: 899px) {
+    .hero {
+      gap: var(--space-4);
+    }
     .hero__text {
       text-align: center;
     }
@@ -363,6 +366,13 @@ const upcomingWorkshops = await sanityClient.fetch(`
       align-items: start;
     }
     }
+
+  /* Tighter section spacing on mobile */
+  @media (max-width: 899px) {
+    .hero, .instruments-band, .services, .our-story {
+      padding-block: var(--space-4);
+    }
+  }
 
   /* Wide banner */
   .wide-banner {
