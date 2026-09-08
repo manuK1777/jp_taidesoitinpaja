@@ -1,0 +1,189 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+
+import heroImage from '../assets/repair-hero_background.webp';
+import iconBasicMaintenance from '../assets/repair-icon_basic-maintenance.webp';
+import iconBrokenInstrument from '../assets/repair-icon_broken_instrument.webp';
+import iconDrumheadReplacement from '../assets/repair-icon_drumhead-replacement.webp';
+
+const services = [
+  {
+    title: 'Basic Maintenance',
+    tag: 'Cleaning · Setup · Strings',
+    body: 'Cleaning, servicing, and adjusting the instrument to make it playable. Also includes string replacement and work on the bridge and nut.',
+    icon: iconBasicMaintenance,
+  },
+  {
+    title: 'Broken Instrument',
+    tag: 'Cracks · Joints · Necks',
+    body: 'Addresses various issues, including cracks that may occur on the top or bottom of the instrument, along with problems related to the joints. It also covers concerns such as a broken neck or headstock, ensuring a comprehensive approach to repairs.',
+    icon: iconBrokenInstrument,
+  },
+  {
+    title: 'Drumhead Replacement',
+    tag: 'Skins · Tuning',
+    body: 'Replacing and tuning a torn drumhead, such as on a djembe or a frame drum. Replacing the skin on an igil or a doshpuluur is included.',
+    icon: iconDrumheadReplacement,
+  },
+];
+---
+
+<Layout title="Repair & Maintenance">
+  <div class="repair-hero" role="img" aria-label="Instrument parts being repaired in the luthier workshop">
+    <Image src={heroImage} alt="" class="repair-hero__image" />
+  </div>
+
+  <section class="repair-intro reveal" aria-labelledby="repair-heading">
+    <div class="container repair-intro__inner">
+      <h1 id="repair-heading">Repair &amp; Maintenance</h1>
+      <p>
+        Does your instrument need repair or maintenance? Wooden instruments
+        require periodic upkeep, adjustments, and care. Changes in weather
+        conditions have a significant impact on them — an instrument should
+        never be stored in an environment that is too dry or too humid. Regular
+        maintenance keeps your instrument in good working condition for a long
+        time. See the different options below.
+      </p>
+    </div>
+  </section>
+
+  <section class="repair-services reveal" aria-labelledby="services-heading">
+    <div class="container">
+      <h2 id="services-heading">Services</h2>
+      <ul class="repair-services__grid" role="list">
+        {services.map((service) => (
+          <li class="service-card">
+            <div class="service-card__icon-wrap">
+              <Image src={service.icon} alt={service.title} class="service-card__icon" />
+            </div>
+            <div class="service-card__body">
+              <h3>{service.title}</h3>
+              <div class="service-card__tag">{service.tag}</div>
+              <p>{service.body}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* Hero banner */
+  .repair-hero {
+    width: 100%;
+    height: clamp(220px, 42vw, 420px);
+    overflow: hidden;
+    box-shadow: inset 0 -6px 14px rgb(40 20 8 / 28%);
+  }
+  .repair-hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 62%;
+    display: block;
+  }
+
+  /* Intro */
+  .repair-intro {
+    padding-block: var(--space-4) var(--space-5);
+  }
+  .repair-intro__inner {
+    max-width: 48rem;
+  }
+  .repair-intro h1 {
+    font-size: clamp(2.25rem, 6vw, 3.5rem);
+    text-shadow:
+      -1px -1px 1px oklch(20% 0.02 63 / 0.18),   
+      1px  1px 1px oklch(60% 0.03 63 / 0.7);
+    line-height: 1.05;
+    margin-bottom: var(--space-3);
+  }
+  .repair-intro p {
+    font-size: 1.125rem;
+    line-height: 1.75;
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* Services */
+  .repair-services {
+    background:
+      linear-gradient(rgb(36 27 20 / 6%), rgb(36 27 20 / 38%)),
+      url('/images/striped-wood-texture.webp') center / cover;
+    padding-block: var(--space-4) var(--space-5);
+    box-shadow:
+      inset 0 5px 12px rgb(50 28 10 / 22%),
+      inset 0 -5px 12px rgb(50 28 10 / 22%);
+  }
+  .repair-services h2 {
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    margin-bottom: var(--space-4);
+  }
+  .repair-services__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--space-3);
+    align-items: stretch;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .service-card {
+    background: var(--color-bg);
+    border: 6px solid #7a5330;
+    border-radius: 3px;
+    box-shadow: 0 4px 10px rgb(40 22 8 / 35%);
+    display: flex;
+    flex-direction: column;
+  }
+  .service-card__icon-wrap {
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2) var(--space-2) 0;
+  }
+  .service-card__icon-wrap :global(.service-card__icon) {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+  }
+  .service-card__body {
+    padding: 22px 26px 28px;
+  }
+  .service-card__body h3 {
+    color: var(--color-dark-brass);
+    font-size: 1.375rem;
+    margin-bottom: 4px;
+  }
+  .service-card__tag {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-1);
+  }
+  .service-card__body p {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 899px) {
+    .repair-intro {
+      padding-block: var(--space-4);
+    }
+    .repair-services {
+      padding-block: var(--space-4);
+    }
+  }
+</style>
