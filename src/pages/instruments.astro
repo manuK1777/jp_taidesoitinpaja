@@ -39,7 +39,7 @@ const instrumentTypes = [...new Set(categoryTitles)].map((title) => ({ title }))
 <style>
 
   h1 {
-    font-size: 2.85rem;
+    font-size: clamp(2.25rem, 6vw, 3.5rem);
     text-shadow:
       -1px -1px 1px oklch(20% 0.02 63 / 0.18),   
       1px  1px 1px oklch(60% 0.03 63 / 0.7);
