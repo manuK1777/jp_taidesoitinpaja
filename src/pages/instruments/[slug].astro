@@ -523,7 +523,7 @@ const availabilityLabels: Record<string, string> = {
       aspect-ratio: 3 / 4;
       background: var(--color-spruce-black);
       border-radius: var(--radius);
-      border: 8px solid #6b4c2e;
+      border: clamp(5px, 1.5vw, 8px) solid #6b4c2e;
       box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
       overflow: hidden;
       opacity: 0.7;
@@ -606,17 +606,11 @@ const availabilityLabels: Record<string, string> = {
     position: relative;
     background: var(--color-spruce-black);
     border-radius: var(--radius);
-    border: 12px solid #6b4c2e;
+    border: clamp(8px, 2vw, 12px) solid #6b4c2e;
     box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
     transition: transform 180ms ease, box-shadow 180ms ease;
     overflow: hidden;
   }
-
-  @media (max-width: 639px) {
-  .instrument-detail__main-image {
-    border: 8px solid #6b4c2e;
-  }
-}
 
   .instrument-detail__main-image::before {
     content: '';

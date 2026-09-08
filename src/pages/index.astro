@@ -213,7 +213,7 @@ const upcomingWorkshops = await sanityClient.fetch(`
 
   .hero__image-wrap {
     border-radius: var(--radius);
-    border: 12px solid #6b4c2e;
+    border: clamp(8px, 2vw, 12px) solid #6b4c2e;
     box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
     transition: transform 180ms ease, box-shadow 180ms ease;
     overflow: hidden;
@@ -283,7 +283,7 @@ const upcomingWorkshops = await sanityClient.fetch(`
     width: min(100%, 52rem);
     margin-inline: auto;
     border-radius: var(--radius);
-    border: 12px solid #6b4c2e;
+    border: clamp(8px, 2vw, 12px) solid #6b4c2e;
     box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
     transition: transform 180ms ease, box-shadow 180ms ease;
     overflow: hidden;
@@ -349,7 +349,7 @@ const upcomingWorkshops = await sanityClient.fetch(`
   }
   .our-story__image-wrap {
     overflow: hidden;
-    border: 12px solid #6b4c2e;
+    border: clamp(8px, 2vw, 12px) solid #6b4c2e;
     border-radius: var(--radius);
     box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
   }

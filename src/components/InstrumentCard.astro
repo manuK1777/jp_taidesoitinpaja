@@ -49,7 +49,7 @@ const hoverImageUrl = hoverImage && hoverImage !== primaryImage
     text-decoration: none;
     color: inherit;
     background: var(--color-bg);
-    border: 8px solid #6b4c2e;
+    border: clamp(5px, 1.5vw, 8px) solid #6b4c2e;
     border-radius: 5px;
     overflow: hidden;
     transform: rotate(var(--instrument-card-rotation, -0.35deg));
