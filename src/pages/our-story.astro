@@ -1,25 +1,157 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import heroImage from '../assets/our-story-hero.webp';
+import workshopImage from '../assets/our-story-hero-in-workshop.webp';
+import { Image } from 'astro:assets';
 ---
 
 <Layout title="Our Story">
-  <main class="container page">
-    <h1>Our Story</h1>
-    <p>Taidesoitinpaja's journey is rooted in a deep passion for preserving the rich essence of folk music through exquisitely handcrafted instruments.</p>
-  </main>
+  <section class="story-band reveal">
+    <div class="container story-band__grid">
+      <div class="story-band__image-wrap">
+        <Image src={heroImage} alt="Jukka-Pekka Lilja in the luthier workshop" class="story-band__image" />
+      </div>
+      <div class="story-band__content">
+        <h1>Our Story</h1>
+        <p>
+          Hello! I'm Jukka-Pekka Lilja, and I am excited to share my journey as a
+          passionate luthier and musician! I specialize in crafting folk
+          instruments like the jouhikko, igil, doshpuluur, and a variety of
+          drums. I invite you to join me on an exhilarating adventure through the
+          vibrant sounds of heritage music as we celebrate the incredible
+          craftsmanship of these instruments. Whether you're a musician or a
+          devoted lover of folk traditions, I can't wait for you to experience
+          the enchanting world of handmade instruments at Taidesoitinpaja!
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="story-band story-band--plain reveal">
+    <div class="container story-band__split">
+      <div class="story-band__centered">
+        <p>
+          I embarked on my journey in the art of instrument building back in 2010
+          when I first took the initiative to craft a Bowed Lyre, known as Jouhikko
+          in Finnish, specifically for my own personal use and enjoyment. To me,
+          instrument making is much more than just a creative pursuit; it involves
+          a commitment to ensuring that each piece is not only visually appealing
+          but also highly functional. My ultimate goal is to design and create
+          distinctive, handcrafted folk instruments that adhere to the highest
+          professional standards, ensuring that there is no compromise in quality
+          or performance.
+        </p>
+        <p>
+          Since 2010, I have built a variety of different instruments, and with
+          each one I complete, I gain a wealth of knowledge. This journey has
+          taught me a great deal about acoustics, materials, design, playability,
+          and much more. Each instrument is a learning experience that enhances my
+          craft and deepens my understanding of what makes an exceptional musical
+          tool.
+        </p>
+      </div>
+      <div class="story-band__image-wrap">
+        <Image src={workshopImage} alt="Jukka-Pekka Lilja working on an instrument in the workshop" class="story-band__image" />
+      </div>
+    </div>
+  </section>
 </Layout>
 
 <style>
-  .page {
+   
+  .story-band {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     padding-block: var(--space-5);
   }
-  .page h1 {
-    color: var(--color-brass);
-    margin-bottom: var(--space-2);
+  .story-band::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(rgb(36 27 20 / 6%), rgb(36 27 20 / 38%)),
+      url('/images/striped-wood-texture.webp') center / cover;
+    transform: scaleX(-1);
+    z-index: -1;
   }
-  .page p {
+
+  .story-band--plain::before {
+    display: none;
+  }
+  @media (max-width: 799px) {
+    .story-band--plain {
+      padding-top: var(--space-4);
+    }
+  }
+
+  .story-band__grid {
+    display: grid;
+    gap: var(--space-4);
+    align-items: center;
+  }
+  @media (min-width: 800px) {
+    .story-band__grid {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap: var(--space-5);
+    }
+  }
+
+  .story-band__image-wrap {
+    border-radius: var(--radius);
+    border: clamp(8px, 2vw, 12px) solid #6b4c2e;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
+    overflow: hidden;
+  }
+  .story-band__image-wrap :global(.story-band__image) {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .story-band__content {
+    align-self: start;
+  }
+  .story-band__content h1 {
+    font-size: clamp(2.25rem, 6vw, 3.5rem);
+    color: var(--color-cream);
+    text-shadow:
+      -1px -1px 1px oklch(20% 0.02 63 / 0.18),   
+       1px  1px 1px oklch(60% 0.03 63 / 0.7);
+    margin-bottom: var(--space-3);
+  }
+  .story-band__content p {
     font-size: 1.0625rem;
     line-height: 1.75;
-    max-width: 38rem;
+    font-weight: 600;
+    /* color: var(--color-text-muted); */
+  }
+
+  .story-band__split {
+    display: grid;
+    gap: var(--space-4);
+    align-items: center;
+  }
+  @media (min-width: 800px) {
+    .story-band__split {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+      gap: var(--space-5);
+    }
+  }
+
+  .story-band__centered {
+    max-width: 42rem;
+  }
+  .story-band__centered h2 {
+    color: var(--color-cream);
+    text-shadow:
+      -1px -1px 1px oklch(20% 0.02 63 / 0.18),   
+       1px  1px 1px oklch(60% 0.03 63 / 0.7);
+    margin-bottom: var(--space-3);
+  }
+  .story-band__centered p {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    margin-bottom: var(--space-2);
   }
 </style>
