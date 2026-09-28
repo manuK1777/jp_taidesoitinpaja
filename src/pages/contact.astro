@@ -1,0 +1,203 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Contact" description="Get in touch with Taidesoitinpaja — handcrafted folk instruments from Karjalohja, Finland.">
+  <section class="contact" aria-labelledby="contact-heading">
+    <div class="container contact__inner">
+      <div class="contact__details reveal">
+        <h1 id="contact-heading" class="visually-hidden">Contact</h1>
+
+        <div class="contact__block">
+          <h2 class="contact__label">Address</h2>
+          <p>
+            Lahdenperä 142<br />
+            09120 Karjalohja<br />
+            Finland
+          </p>
+        </div>
+
+        <div class="contact__block">
+          <h2 class="contact__label">Telephone</h2>
+          <p><a href="tel:+358405755403">+358 40 575 5403</a></p>
+        </div>
+
+        <div class="contact__block">
+          <h2 class="contact__label">Email</h2>
+          <p><a class="contact__email" href="mailto:taidesoitinpaja@gmail.com">taidesoitinpaja@gmail.com</a></p>
+        </div>
+      </div>
+
+      <div class="contact-card reveal">
+        <h2 class="contact-card__title">Contact us</h2>
+        <form class="contact-form" action="mailto:taidesoitinpaja@gmail.com" method="post" enctype="text/plain">
+          <div class="contact-form__row">
+            <div class="contact-form__field">
+              <label for="first-name">First name <span aria-hidden="true">*</span></label>
+              <input type="text" id="first-name" name="first-name" autocomplete="given-name" required />
+            </div>
+            <div class="contact-form__field">
+              <label for="last-name">Last name <span aria-hidden="true">*</span></label>
+              <input type="text" id="last-name" name="last-name" autocomplete="family-name" required />
+            </div>
+          </div>
+          <div class="contact-form__field">
+            <label for="email">Email <span aria-hidden="true">*</span></label>
+            <input type="email" id="email" name="email" autocomplete="email" required />
+          </div>
+          <div class="contact-form__field">
+            <label for="message">Write a message <span aria-hidden="true">*</span></label>
+            <textarea id="message" name="message" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="btn--solid contact-form__submit">Submit</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .contact {
+    background:
+      linear-gradient(oklch(0.96 0.05 85.26 / 55%), oklch(0.9 0.04 80 / 35%)),
+      linear-gradient(rgb(36 27 20 / 4%), rgb(36 27 20 / 18%)),
+      url('/images/striped-wood-texture.webp') center / cover;
+    padding-block: var(--space-4) var(--space-5);
+    box-shadow:
+      inset 0 5px 12px rgb(50 28 10 / 22%),
+      inset 0 -5px 12px rgb(50 28 10 / 22%);
+  }
+  .contact__inner {
+    display: grid;
+    gap: var(--space-4);
+    align-items: start;
+  }
+  @media (min-width: 800px) {
+    .contact__inner {
+      grid-template-columns: 1fr 1.6fr;
+      gap: var(--space-5);
+    }
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  /* Details column */
+  .contact__details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .contact__label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-cream);
+    margin-bottom: var(--space-1);
+    text-shadow: none;
+  }
+  .contact__block p {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  .contact__block a {
+    text-decoration: none;
+  }
+  .contact__block a:hover {
+    color: var(--color-dark-brass);
+  }
+  .contact__email {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* Form card */
+  .contact-card {
+    background: var(--color-bg);
+    border: 6px solid #7a5330;
+    border-radius: 3px;
+    box-shadow: 0 4px 10px rgb(40 22 8 / 35%);
+    padding: clamp(1.5rem, 4vw, 2.75rem);
+  }
+  .contact-card__title {
+    color: var(--color-dark-brass);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    margin-bottom: var(--space-3);
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .contact-form__row {
+    display: grid;
+    gap: var(--space-3);
+  }
+  @media (min-width: 560px) {
+    .contact-form__row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .contact-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .contact-form__field label {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: oklch(37.686% 0.12823 142.511 / 0.678);
+  }
+  .contact-form__field input,
+  .contact-form__field textarea {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-cream);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid oklch(35% 0.02 63 / 45%);
+    padding: 6px 2px;
+    border-radius: 0;
+  }
+  .contact-form__field textarea {
+    resize: vertical;
+    min-height: 5rem;
+  }
+  .contact-form__field input:focus,
+  .contact-form__field textarea:focus {
+    outline: none;
+    border-bottom-color: var(--color-dark-brass);
+  }
+  .contact-form__submit {
+    align-self: flex-start;
+    font-weight: 700;
+    box-shadow:
+      inset 0 1px rgb(255 245 220 / 32%),
+      0 3px 0 oklch(45% 0.1 75),
+      0 5px 10px rgb(0 0 0 / 18%);
+  }
+  .contact-form__submit:active {
+    transform: translateY(2px);
+    box-shadow:
+      inset 0 2px 4px rgb(55 33 18 / 35%),
+      0 1px 0 oklch(45% 0.1 75);
+  }
+
+  @media (max-width: 799px) {
+    .contact {
+      padding-block: var(--space-4);
+    }
+  }
+</style>
