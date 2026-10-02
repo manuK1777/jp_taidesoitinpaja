@@ -1,4 +1,7 @@
 ---
+import { Image } from 'astro:assets';
+import logoMoose from '../assets/logo-icon-moose.webp';
+
 const navItems = [
   { label: 'Home', href: '/' },
   { label: 'Instruments', href: '/instruments' },
@@ -16,8 +19,10 @@ const isCurrent = (href: string) =>
 <footer class="site-footer">
   <div class="container site-footer__inner">
     <div>
-      <div class="site-footer__brand">Taidesoitinpaja</div>
-      <p>Handcrafted folk instruments from Finland</p>
+      <div class="site-footer__brand">
+        <Image src={logoMoose} alt="Taidesoitinpaja" width={200} class="site-footer__logo" />
+      </div>
+      <p class="site-brand__text">Handcrafted folk instruments from Finland</p>
     </div>
     <nav aria-labelledby="footer-explore-heading">
       <h2 class="site-footer__heading" id="footer-explore-heading">Explore</h2>
@@ -41,7 +46,10 @@ const isCurrent = (href: string) =>
     </div>
   </div>
   <div class="container site-footer__bottom">
-    © {new Date().getFullYear()} Taidesoitinpaja. All rights reserved.
+    <span>© {new Date().getFullYear()} Taidesoitinpaja. All rights reserved.</span>
+    <div class="dev-brand">
+      Site by <a href="https://mkrapo.dev/" target="_blank" rel="noopener noreferrer" class="dev-link"><span class="dev-k">K</span><span class="dev-m">M</span></a>
+    </div>
   </div>
 </footer>
 
@@ -64,11 +72,14 @@ const isCurrent = (href: string) =>
     }
   }
   .site-footer__brand {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 1.25rem;
     margin-bottom: 10px;
-    color: oklch(92% 0.015 80);
+  }
+  .site-brand__text {
+    font-size: 0.975rem;
+  }
+  .site-footer__logo {
+    height: auto;
+    display: block;
   }
   .site-footer p {
     color: oklch(80% 0.015 80);
@@ -101,6 +112,10 @@ const isCurrent = (href: string) =>
     color: oklch(88% 0.015 80);
   }
   .site-footer__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-2);
     margin-top: var(--space-4);
     padding-top: var(--space-2);
     border-top: 1px solid oklch(40% 0.02 60);
@@ -109,4 +124,26 @@ const isCurrent = (href: string) =>
     letter-spacing: 0.03em;
     color: oklch(65% 0.015 75);
   }
+  .dev-brand {
+    font-size: 0.85rem;
+    font-family: var(--font-display);
+    letter-spacing: 0.05em;
+  }
+  .dev-link {
+    color: var(--color-brass);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .dev-link:hover {
+    color: #dc2626;
+  }
+  .dev-k {
+  display: inline-block;
+  transform: rotateY(180deg) translateY(0.3rem);
+  font-size: 0.95rem;
+}
+.dev-m {
+  vertical-align: middle;
+  font-size: 0.95rem;
+}
 </style>
