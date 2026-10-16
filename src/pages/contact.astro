@@ -89,13 +89,15 @@ import Layout from '../layouts/Layout.astro';
     };
 
     const resetForm = () => {
-      form.reset();
-      form.hidden = false;
-      successMessage.hidden = true;
-      errorMessage.hidden = true;
-      if (submitButton instanceof HTMLButtonElement) submitButton.disabled = false;
-      form.focus();
-    };
+  const messageField = document.getElementById('message');
+  if (messageField instanceof HTMLTextAreaElement) messageField.value = '';
+
+  form.hidden = false;
+  successMessage.hidden = true;
+  errorMessage.hidden = true;
+  if (submitButton instanceof HTMLButtonElement) submitButton.disabled = false;
+  messageField?.focus();
+};
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
