@@ -31,7 +31,7 @@ import Layout from '../layouts/Layout.astro';
 
         <div class="contact-card reveal">
           <h2 class="contact-card__title">Send a message</h2>
-          <form class="contact-form" action="https://api.web3forms.com/submit" method="post">
+          <form id="contactForm" class="contact-form" action="https://api.web3forms.com/submit" method="post">
             <input type="hidden" name="access_key" value="7805c6d9-fdaf-4ebe-91e6-2e736833ea2b" />
             <div class="contact-form__row">
               <div class="contact-form__field">
@@ -52,12 +52,52 @@ import Layout from '../layouts/Layout.astro';
               <textarea id="message" name="message" rows="5" required></textarea>
             </div>
             <button type="submit" class="btn btn--solid contact-form__submit">Submit</button>
+            <p id="formError" class="contact-form__status contact-form__status--error" role="alert" hidden></p>
           </form>
+          <p id="formSuccess" class="contact-form__status" role="status" hidden>Thanks — we'll be in touch soon.</p>
         </div>
       </div>
     </div>
   </section>
 </Layout>
+
+<script>
+  const form = document.getElementById('contactForm');
+  const successMessage = document.getElementById('formSuccess');
+  const errorMessage = document.getElementById('formError');
+
+  if (form instanceof HTMLFormElement && successMessage && errorMessage) {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      errorMessage.hidden = true;
+
+      const submitButton = form.querySelector('button[type="submit"]');
+      if (submitButton instanceof HTMLButtonElement) submitButton.disabled = true;
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          form.hidden = true;
+          successMessage.hidden = false;
+        } else {
+          errorMessage.textContent = data.message || 'Something went wrong. Please try again.';
+          errorMessage.hidden = false;
+        }
+      } catch {
+        errorMessage.textContent = 'Something went wrong. Please try again.';
+        errorMessage.hidden = false;
+      } finally {
+        if (submitButton instanceof HTMLButtonElement) submitButton.disabled = false;
+      }
+    });
+  }
+</script>
 
 <style>
   .contact {
@@ -195,6 +235,19 @@ import Layout from '../layouts/Layout.astro';
     box-shadow:
       inset 0 2px 4px rgb(55 33 18 / 35%),
       0 1px 0 oklch(45% 0.1 75);
+  }
+  .contact-form__submit:disabled {
+    cursor: wait;
+    opacity: 0.65;
+  }
+  .contact-form__status {
+    color: var(--color-dark-brass);
+    font-size: 1.125rem;
+    text-align: center;
+  }
+  .contact-form__status--error {
+    color: var(--color-oxblood);
+    font-size: 0.9375rem;
   }
 
   @media (max-width: 799px) {
