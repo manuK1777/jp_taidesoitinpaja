@@ -31,15 +31,16 @@ import Layout from '../layouts/Layout.astro';
 
         <div class="contact-card reveal">
           <h2 class="contact-card__title">Send a message</h2>
-          <form class="contact-form" action="mailto:taidesoitinpaja@gmail.com" method="post" enctype="text/plain">
+          <form class="contact-form" action="https://api.web3forms.com/submit" method="post">
+            <input type="hidden" name="access_key" value="7805c6d9-fdaf-4ebe-91e6-2e736833ea2b" />
             <div class="contact-form__row">
               <div class="contact-form__field">
                 <label for="first-name">First name <span aria-hidden="true">*</span></label>
-                <input type="text" id="first-name" name="first-name" autocomplete="given-name" required />
+                <input type="text" id="first-name" name="first_name" autocomplete="given-name" required />
               </div>
               <div class="contact-form__field">
                 <label for="last-name">Last name <span aria-hidden="true">*</span></label>
-                <input type="text" id="last-name" name="last-name" autocomplete="family-name" required />
+                <input type="text" id="last-name" name="last_name" autocomplete="family-name" required />
               </div>
             </div>
             <div class="contact-form__field">
