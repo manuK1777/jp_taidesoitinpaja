@@ -54,7 +54,10 @@ import Layout from '../layouts/Layout.astro';
             <button type="submit" class="btn btn--solid contact-form__submit">Submit</button>
             <p id="formError" class="contact-form__status contact-form__status--error" role="alert" hidden></p>
           </form>
-          <p id="formSuccess" class="contact-form__status" role="status" hidden>Thanks — we'll be in touch soon.</p>
+          <div id="formSuccess" class="contact-form__status" role="status" tabindex="-1" hidden>
+            <p>Thanks — we’ve received your message and will get back to you soon.</p>
+            <button id="resetForm" type="button" class="btn contact-form__reset">Send another message</button>
+          </div>
         </div>
       </div>
     </div>
@@ -65,13 +68,36 @@ import Layout from '../layouts/Layout.astro';
   const form = document.getElementById('contactForm');
   const successMessage = document.getElementById('formSuccess');
   const errorMessage = document.getElementById('formError');
+  const resetButton = document.getElementById('resetForm');
 
-  if (form instanceof HTMLFormElement && successMessage && errorMessage) {
+  if (form instanceof HTMLFormElement && successMessage && errorMessage && resetButton instanceof HTMLButtonElement) {
+    const submitButton = form.querySelector('button[type="submit"]');
+
+    const showSuccess = () => {
+      form.hidden = true;
+      successMessage.hidden = false;
+      successMessage.focus();
+    };
+
+    const showError = (message: string) => {
+      errorMessage.textContent = message;
+      errorMessage.hidden = false;
+      if (submitButton instanceof HTMLButtonElement) submitButton.disabled = false;
+    };
+
+    const resetForm = () => {
+      form.reset();
+      form.hidden = false;
+      successMessage.hidden = true;
+      errorMessage.hidden = true;
+      if (submitButton instanceof HTMLButtonElement) submitButton.disabled = false;
+      form.focus();
+    };
+
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       errorMessage.hidden = true;
 
-      const submitButton = form.querySelector('button[type="submit"]');
       if (submitButton instanceof HTMLButtonElement) submitButton.disabled = true;
 
       try {
@@ -83,19 +109,16 @@ import Layout from '../layouts/Layout.astro';
         const data = await response.json();
 
         if (response.ok && data.success) {
-          form.hidden = true;
-          successMessage.hidden = false;
+          showSuccess();
         } else {
-          errorMessage.textContent = data.message || 'Something went wrong. Please try again.';
-          errorMessage.hidden = false;
+          showError(data.message || 'Something went wrong. Please try again.');
         }
       } catch {
-        errorMessage.textContent = 'Something went wrong. Please try again.';
-        errorMessage.hidden = false;
-      } finally {
-        if (submitButton instanceof HTMLButtonElement) submitButton.disabled = false;
+        showError('Something went wrong. Please try again.');
       }
     });
+
+    resetButton.addEventListener('click', resetForm);
   }
 </script>
 
@@ -244,10 +267,20 @@ import Layout from '../layouts/Layout.astro';
     color: var(--color-dark-brass);
     font-size: 1.125rem;
     text-align: center;
+    outline: none;
+  }
+  .contact-form__status:focus {
+    outline: none;
   }
   .contact-form__status--error {
     color: var(--color-oxblood);
     font-size: 0.9375rem;
+  }
+  .contact-form__status p {
+    margin-bottom: var(--space-3);
+  }
+  .contact-form__reset {
+    align-self: center;
   }
 
   @media (max-width: 799px) {
