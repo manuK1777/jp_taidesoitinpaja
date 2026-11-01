@@ -9,7 +9,7 @@
 
 :root {
   /* Color */
-  --color-bg: oklch(0.96 0.05 85.26);       /* light birch-cream page bg */
+  --color-bg: oklch(0.96 0.035 85.26);      /* light birch-cream page bg */
   --color-bg-raised: oklch(92% 0.03 80);    /* shaded panel/section band */
   --color-cream: oklch(24% 0.03 60);        /* primary ink — warm near-black */
   --color-walnut: oklch(45% 0.02 70);       /* walnut brown */
@@ -40,6 +40,18 @@
   /* Layout */
   --content-max: 72rem;
   --radius: 4px;
+
+  /* Wood texture band */
+  --bg-wood: url('/images/striped-wood-texture.webp') center / cover;
+}
+
+.wood-band {
+  --wood-band-overlay:
+    linear-gradient(oklch(96% .05 85.26 / .55), oklch(90% .04 80 / .35)),
+    linear-gradient(#241b1438, #241b1440);
+  background:
+    var(--wood-band-overlay),
+    var(--bg-wood);
 }
 
 * {

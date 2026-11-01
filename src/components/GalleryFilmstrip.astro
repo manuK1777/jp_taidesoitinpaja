@@ -29,7 +29,7 @@ const galleryItems = items.map((item, index) => ({
 }));
 ---
 
-<section class="gallery-filmstrip" class:list={{ 'gallery-filmstrip--muted': muted }}>
+<section class="gallery-filmstrip wood-band" class:list={{ 'gallery-filmstrip--muted': muted }}>
   <div class="container gallery-filmstrip__header">
     <h2>{title}</h2>
   </div>
@@ -93,9 +93,6 @@ const galleryItems = items.map((item, index) => ({
 <style>
   .gallery-filmstrip {
     /* background: var(--color-bg-raised); */
-    background:
-      linear-gradient(rgb(36 27 20 / 12%), rgb(36 27 20 / 62%)),
-      url('/images/striped-wood-texture.webp') center / cover;
     padding-block: var(--space-4);
   }
 
@@ -194,7 +191,7 @@ const galleryItems = items.map((item, index) => ({
     scroll-snap-align: start;
     border: 0;
     border-radius: 6px;
-    border: clamp(6px, 1vw, 8px) solid #6b4c2e;
+    border: clamp(4px, 1vw, 6px) solid #6b4c2e;
     box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
     background: none;
     padding: 0;

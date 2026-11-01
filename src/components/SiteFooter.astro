@@ -56,8 +56,8 @@ const isCurrent = (href: string) =>
 <style>
   .site-footer {
     background:
-      linear-gradient(rgb(36 27 20 / 12%), rgb(36 27 20 / 12%)),
-      url('/images/wood-mahogany.webp') center / cover;
+      linear-gradient(rgb(36 27 20 / 18%), rgb(36 27 20 / 18%)),
+      url('/images/wood-mahogany-light-brown.webp') center / cover;
     backdrop-filter: blur(6px);
     color: oklch(92% 0.015 80);
     padding: var(--space-5) 0 var(--space-2);
@@ -74,15 +74,16 @@ const isCurrent = (href: string) =>
   .site-footer__brand {
     margin-bottom: 10px;
   }
-  .site-brand__text {
+  .site-footer .site-brand__text {
     font-size: 0.975rem;
+    color: oklch(80% 0.015 80);
   }
   .site-footer__logo {
     height: auto;
     display: block;
   }
   .site-footer p {
-    color: oklch(80% 0.015 80);
+    color: oklch(90% 0.015 80);
   }
   .site-footer__heading {
     font-family: var(--font-mono);
@@ -90,7 +91,7 @@ const isCurrent = (href: string) =>
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--color-brass);
+    color: oklch(0.78 0.12 79.79);
     margin-bottom: var(--space-1);
   }
   .site-footer__links {
@@ -100,16 +101,15 @@ const isCurrent = (href: string) =>
   }
   .site-footer__links a {
     font-size: 0.875rem;
-    color: oklch(88% 0.015 80);
+    color: oklch(90% 0.015 80);
     text-decoration: none;
   }
   .site-footer__links a:hover {
-    color: var(--color-brass);
+    color: oklch(0.78 0.12 79.79);
   }
   .site-footer__contact {
     font-size: 0.875rem;
     line-height: 1.8;
-    color: oklch(88% 0.015 80);
   }
   .site-footer__bottom {
     display: flex;
@@ -122,7 +122,7 @@ const isCurrent = (href: string) =>
     font-family: var(--font-mono);
     font-size: 0.7rem;
     letter-spacing: 0.03em;
-    color: oklch(65% 0.015 75);
+    color: oklch(85% 0.015 80);
   }
   .dev-brand {
     font-size: 0.85rem;
@@ -130,7 +130,7 @@ const isCurrent = (href: string) =>
     letter-spacing: 0.05em;
   }
   .dev-link {
-    color: var(--color-brass);
+    color: oklch(0.78 0.12 79.79);
     text-decoration: none;
     font-weight: 600;
   }

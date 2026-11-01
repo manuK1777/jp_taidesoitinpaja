@@ -48,7 +48,7 @@ const services = [
     </div>
   </section>
 
-  <section class="repair-services reveal" aria-labelledby="services-heading">
+  <section class="repair-services wood-band reveal" aria-labelledby="services-heading">
     <div class="container">
       <h2 id="services-heading">Services</h2>
       <ul class="repair-services__grid" role="list">
@@ -109,10 +109,12 @@ const services = [
 
   /* Services */
   .repair-services {
-    background:
-      linear-gradient(rgb(36 27 20 / 6%), rgb(36 27 20 / 38%)),
-      url('/images/striped-wood-texture.webp') center / cover;
+.contact[data-astro-cid-6bfsojfh] {
+    --wood-band-overlay: linear-gradient(oklch(96% .05 85.26 / .55), oklch(90% .04 80 / .35)),
+      linear-gradient(#241b140a, #241b142e);
     padding-block: var(--space-4) var(--space-5);
+    box-shadow: inset 0 5px 12px #321c0a38, inset 0 -5px 12px #321c0a38;
+}    padding-block: var(--space-4) var(--space-5);
     box-shadow:
       inset 0 5px 12px rgb(50 28 10 / 22%),
       inset 0 -5px 12px rgb(50 28 10 / 22%);
