@@ -92,6 +92,14 @@ const availabilityLabels: Record<string, string> = {
   sold: 'Sold',
   'made-to-order': 'Made to order',
 };
+
+const ctaLabels: Record<string, string> = {
+  'in-stock': 'Inquire about this instrument',
+  'made-to-order': 'Ask about ordering this instrument',
+  sold: 'Ask about a similar instrument',
+};
+const ctaLabel = ctaLabels[availability] ?? ctaLabels['in-stock'];
+const inquiryHref = `/contact?instrument=${encodeURIComponent(slug ?? '')}`;
 ---
 
 <Layout title={name}>
@@ -244,6 +252,10 @@ const availabilityLabels: Record<string, string> = {
           {availabilityLabels[availability] ?? availability}
         </span>
       )}
+
+      <a href={inquiryHref} class="btn btn--solid instrument-detail__cta">
+        {ctaLabel}
+      </a>
 
       {categoryDescription && (
         <div class="instrument-detail__text">
@@ -799,6 +811,12 @@ const availabilityLabels: Record<string, string> = {
   .instrument-detail__availability--sold {
     color: var(--color-oxblood);
     border-color: var(--color-oxblood);
+  }
+
+  .instrument-detail__cta {
+    display: block;
+    width: fit-content;
+    margin-top: var(--space-3);
   }
 
   .instrument-detail__text {

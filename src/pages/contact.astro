@@ -1,5 +1,20 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { sanityClient } from "../lib/sanity";
+
+type InstrumentOption = {
+  name: string;
+  slug: string;
+  availability?: string;
+};
+
+const instruments: InstrumentOption[] = await sanityClient.fetch(`
+  *[_type == "instrument" && defined(slug.current)] | order(name asc) {
+    name,
+    "slug": slug.current,
+    availability
+  }
+`);
 ---
 
 <Layout
@@ -54,6 +69,11 @@ import Layout from "../layouts/Layout.astro";
               name="access_key"
               value="7805c6d9-fdaf-4ebe-91e6-2e736833ea2b"
             />
+            <input
+              type="hidden"
+              name="subject"
+              value="New message from taidesoitinpaja.com"
+            />
             <div class="visually-hidden" aria-hidden="true">
               <input
                 type="checkbox"
@@ -100,6 +120,24 @@ import Layout from "../layouts/Layout.astro";
                 autocomplete="email"
                 required
               />
+            </div>
+            <div class="contact-form__field">
+              <label for="instrument">Instrument (optional)</label>
+              <select id="instrument" name="instrument">
+                <option value="">General inquiry</option>
+                {
+                  instruments.map((instrument) => (
+                    <option
+                      value={instrument.name}
+                      data-slug={instrument.slug}
+                      data-availability={instrument.availability}
+                    >
+                      {instrument.name}
+                      {instrument.availability === "sold" ? " (sold)" : ""}
+                    </option>
+                  ))
+                }
+              </select>
             </div>
             <div class="contact-form__field">
               <label for="message">
@@ -210,6 +248,57 @@ import Layout from "../layouts/Layout.astro";
         showError("Something went wrong. Please try again.");
       }
     });
+
+    const instrumentSelect = document.getElementById("instrument");
+    const subjectInput = form.querySelector('input[name="subject"]');
+    const messageInput = document.getElementById("message");
+
+    if (
+      instrumentSelect instanceof HTMLSelectElement &&
+      subjectInput instanceof HTMLInputElement &&
+      messageInput instanceof HTMLTextAreaElement
+    ) {
+      const defaultSubject = subjectInput.value;
+      const messageTemplates: Record<string, (name: string) => string> = {
+        "in-stock": (name) =>
+          `Hello, I'm interested in the ${name}.`,
+        "made-to-order": (name) =>
+          `Hello, I'd like to know more about ordering a ${name}.`,
+        sold: (name) =>
+          `Hello, I saw that the ${name} has been sold. I'm interested in a similar instrument.`,
+      };
+      let lastPrefill = "";
+
+      const applyInstrument = () => {
+        const option = instrumentSelect.selectedOptions[0];
+        const name = option?.value ?? "";
+        subjectInput.value = name ? `Inquiry: ${name}` : defaultSubject;
+
+        const template =
+          messageTemplates[option?.dataset.availability ?? ""] ??
+          messageTemplates["in-stock"];
+        const prefill = name ? template(name) : "";
+
+        // Only overwrite the message if the visitor hasn't typed their own.
+        if (messageInput.value === "" || messageInput.value === lastPrefill) {
+          messageInput.value = prefill;
+          lastPrefill = prefill;
+        }
+      };
+
+      instrumentSelect.addEventListener("change", applyInstrument);
+
+      const wanted = new URLSearchParams(window.location.search).get(
+        "instrument",
+      );
+      const match = Array.from(instrumentSelect.options).find(
+        (option) => option.dataset.slug === wanted,
+      );
+      if (match) {
+        match.selected = true;
+        applyInstrument();
+      }
+    }
 
     resetButton.addEventListener("click", resetForm);
   }
@@ -333,6 +422,7 @@ import Layout from "../layouts/Layout.astro";
     color: oklch(37.686% 0.12823 142.511 / 0.678);
   }
   .contact-form__field input,
+  .contact-form__field select,
   .contact-form__field textarea {
     font-family: var(--font-body);
     font-size: 1rem;
@@ -348,9 +438,14 @@ import Layout from "../layouts/Layout.astro";
     min-height: 5rem;
   }
   .contact-form__field input:focus,
+  .contact-form__field select:focus,
   .contact-form__field textarea:focus {
     outline: none;
     border-bottom-color: var(--color-dark-brass);
+  }
+  .contact-form__field select option {
+    color: var(--color-cream);
+    background: var(--color-bg);
   }
   .contact-form__submit {
     align-self: center;
