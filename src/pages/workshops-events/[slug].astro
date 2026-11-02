@@ -1,0 +1,284 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Lightbox from '../../components/Lightbox.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { PortableText } from 'astro-portabletext';
+import { sanityClient, urlFor } from '../../lib/sanity';
+import { eventTypeLabels, formatEventDate, formatEventPrice, isPastEvent } from '../../lib/workshopEvents';
+
+export async function getStaticPaths() {
+  const slugs = await sanityClient.fetch(`
+    *[_type == "workshopEvent" && defined(slug.current)] {
+      "slug": slug.current
+    }
+  `);
+
+  return slugs.map((s: { slug: string }) => ({
+    params: { slug: s.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+const workshopEvent = await sanityClient.fetch(
+  `
+    *[_type == "workshopEvent" && slug.current == $slug][0] {
+      title,
+      type,
+      coverImage,
+      additionalImages,
+      shortDescription,
+      description,
+      startDateTime,
+      endDateTime,
+      location,
+      price,
+      capacity,
+      signUpLink
+    }
+  `,
+  { slug }
+);
+
+if (!workshopEvent) {
+  return Astro.redirect('/404');
+}
+
+const {
+  title,
+  type,
+  coverImage,
+  additionalImages,
+  shortDescription,
+  description,
+  location,
+  price,
+  capacity,
+  signUpLink,
+} = workshopEvent;
+
+const images = [coverImage, ...(additionalImages ?? [])]
+  .filter(Boolean)
+  .map((image: any, index: number) => ({
+    alt: `${title} – photo ${index + 1}`,
+    thumbSrc: urlFor(image).width(240).height(240).fit('crop').auto('format').url(),
+    mainSrc: urlFor(image).width(1000).height(750).fit('crop').auto('format').url(),
+    fullSrc: urlFor(image).width(1600).auto('format').url(),
+  }));
+
+const [mainImage, ...otherImages] = images;
+const typeLabel = eventTypeLabels[type] ?? type;
+const priceLabel = formatEventPrice(price);
+const isPast = isPastEvent(workshopEvent);
+---
+
+<Layout title={title} description={shortDescription ?? undefined}>
+  <Breadcrumbs
+    items={[
+      { label: 'Home', href: '/' },
+      { label: 'Workshops & Events', href: '/workshops-events' },
+      { label: title },
+    ]}
+  />
+  <section class="event-detail container">
+    <div class="event-detail__gallery">
+      {mainImage && (
+        <button
+          type="button"
+          class="event-detail__main-image"
+          data-lightbox-group="event-detail"
+          data-lightbox-src={mainImage.fullSrc}
+          data-lightbox-alt={mainImage.alt}
+          data-lightbox-caption={title}
+          aria-label={`Open ${mainImage.alt} in lightbox`}
+        >
+          <img src={mainImage.mainSrc} alt={mainImage.alt} width="1000" height="750" loading="eager" decoding="async" />
+        </button>
+      )}
+      {otherImages.length > 0 && (
+        <div class="event-detail__thumbs">
+          {otherImages.map((image) => (
+            <button
+              type="button"
+              class="event-detail__thumb"
+              data-lightbox-group="event-detail"
+              data-lightbox-src={image.fullSrc}
+              data-lightbox-alt={image.alt}
+              data-lightbox-caption={title}
+              aria-label={`Open ${image.alt} in lightbox`}
+            >
+              <img src={image.thumbSrc} alt="" width="240" height="240" loading="lazy" decoding="async" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <div class="event-detail__info">
+      {typeLabel && <p class="eyebrow">{isPast ? `Past ${typeLabel.toLowerCase()}` : typeLabel}</p>}
+      <h1>{title}</h1>
+
+      <dl class="event-detail__facts">
+        <div class="event-detail__fact-row">
+          <dt>Date</dt>
+          <dd>{formatEventDate(workshopEvent, { withTime: true })}</dd>
+        </div>
+        <div class="event-detail__fact-row">
+          <dt>Location</dt>
+          <dd>{location || 'Location TBD'}</dd>
+        </div>
+        {priceLabel && (
+          <div class="event-detail__fact-row">
+            <dt>Price</dt>
+            <dd>{priceLabel}</dd>
+          </div>
+        )}
+        {typeof capacity === 'number' && (
+          <div class="event-detail__fact-row">
+            <dt>Capacity</dt>
+            <dd>{capacity}</dd>
+          </div>
+        )}
+      </dl>
+
+      {!isPast && (
+        signUpLink ? (
+          <a href={signUpLink} class="btn btn--solid event-detail__cta" target="_blank" rel="noopener noreferrer">
+            Sign up / more info
+          </a>
+        ) : (
+          <a href="/contact" class="btn btn--solid event-detail__cta">Ask about this {typeLabel?.toLowerCase()}</a>
+        )
+      )}
+
+      {description && description.length > 0 ? (
+        <div class="event-detail__text">
+          <PortableText value={description} />
+        </div>
+      ) : (
+        shortDescription && (
+          <div class="event-detail__text">
+            <p>{shortDescription}</p>
+          </div>
+        )
+      )}
+    </div>
+  </section>
+
+  <Lightbox />
+</Layout>
+
+<style>
+  .event-detail {
+    display: grid;
+    gap: var(--space-4);
+    padding-top: var(--space-2);
+    padding-bottom: var(--space-5);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (min-width: 900px) {
+    .event-detail {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+
+  .event-detail__main-image,
+  .event-detail__thumb {
+    display: block;
+    padding: 0;
+    overflow: hidden;
+    background: var(--color-bg-raised);
+    border: clamp(8px, 2vw, 12px) solid #6b4c2e;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
+    cursor: zoom-in;
+  }
+
+  .event-detail__main-image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+  }
+
+  .event-detail__main-image:hover,
+  .event-detail__thumb:hover {
+    background: var(--color-bg-raised);
+  }
+
+  .event-detail__main-image img,
+  .event-detail__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .event-detail__thumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+  }
+
+  .event-detail__thumb {
+    width: 90px;
+    height: 90px;
+    border-width: 2px;
+    transition: transform 180ms ease;
+  }
+
+  .event-detail__thumb:hover {
+    transform: scale(1.05);
+  }
+
+  .event-detail__info h1 {
+    margin-top: var(--space-1);
+    font-size: clamp(2rem, 4vw, 2.5rem);
+    overflow-wrap: anywhere;
+  }
+
+  .event-detail__facts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: var(--space-3) 0 0;
+  }
+
+  .event-detail__fact-row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-block: 0.4rem;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.95rem;
+  }
+
+  .event-detail__fact-row dt {
+    font-weight: 600;
+    color: var(--color-cream);
+  }
+
+  .event-detail__fact-row dd {
+    margin: 0;
+    color: var(--color-text-muted);
+    text-align: right;
+  }
+
+  .event-detail__cta {
+    display: block;
+    width: fit-content;
+    margin-top: var(--space-3);
+  }
+
+  .event-detail__text {
+    margin-top: var(--space-3);
+    color: var(--color-text-muted);
+    line-height: 1.7;
+  }
+
+  .event-detail__text :global(p) {
+    margin-bottom: var(--space-3);
+    color: var(--color-text-muted);
+  }
+</style>

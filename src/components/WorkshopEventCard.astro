@@ -1,0 +1,179 @@
+---
+import { Image } from 'astro:assets';
+import { urlFor } from '../lib/sanity';
+import { eventTypeLabels, formatEventDate, formatEventPrice, isPastEvent } from '../lib/workshopEvents';
+
+interface Props {
+  title: string;
+  slug: string;
+  type?: string;
+  coverImage?: any;
+  shortDescription?: string;
+  startDateTime?: string;
+  endDateTime?: string;
+  location?: string;
+  price?: number;
+}
+
+const { title, slug, type, coverImage, shortDescription, startDateTime, endDateTime, location, price } = Astro.props;
+
+const imageUrl = coverImage ? urlFor(coverImage).width(800).height(600).fit('crop').auto('format').url() : null;
+const typeLabel = type ? (eventTypeLabels[type] ?? type) : null;
+const isPast = isPastEvent({ startDateTime, endDateTime });
+const priceLabel = formatEventPrice(price);
+---
+
+<article class="workshop-event-card">
+  <div class="workshop-event-card__image">
+    {typeLabel && <span class="workshop-event-card__badge">{isPast ? `Past ${typeLabel.toLowerCase()}` : typeLabel}</span>}
+    {imageUrl && <Image src={imageUrl} alt={title} width={800} height={600} loading="lazy" />}
+  </div>
+  <div class="workshop-event-card__body">
+    <h2 class="workshop-event-card__title">{title}</h2>
+    <dl class="workshop-event-card__facts">
+      <div>
+        <dt>Date</dt>
+        <dd>{formatEventDate({ startDateTime, endDateTime })}</dd>
+      </div>
+      <div>
+        <dt>Location</dt>
+        <dd>{location || 'Location TBD'}</dd>
+      </div>
+      {priceLabel && (
+        <div>
+          <dt>Price</dt>
+          <dd>{priceLabel}</dd>
+        </div>
+      )}
+    </dl>
+    {shortDescription && <p class="workshop-event-card__description">{shortDescription}</p>}
+    <a
+      href={`/workshops-events/${slug}`}
+      class="btn btn--solid workshop-event-card__details"
+      aria-label={`Details for ${title}`}
+    >
+      Details
+    </a>
+  </div>
+</article>
+
+<style>
+  .workshop-event-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg);
+    border: clamp(3px, 1.5vw, 6px) solid #6b4c2e;
+    border-radius: 5px;
+    overflow: hidden;
+    transform: rotate(var(--workshop-event-card-rotation, -0.35deg));
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+
+  .workshop-event-card:nth-child(3n + 1) {
+    --workshop-event-card-rotation: -0.3deg;
+  }
+
+  .workshop-event-card:nth-child(3n + 2) {
+    --workshop-event-card-rotation: 0.5deg;
+  }
+
+  .workshop-event-card:nth-child(3n) {
+    --workshop-event-card-rotation: -0.2deg;
+  }
+
+  .workshop-event-card:hover {
+    transform: translateY(-2px) rotate(var(--workshop-event-card-rotation, -0.35deg));
+    box-shadow: 0 7px 12px rgb(0 0 0 / 28%);
+  }
+
+  .workshop-event-card__image {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    position: relative;
+    background: var(--color-bg-raised);
+  }
+
+  .workshop-event-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+
+  .workshop-event-card:hover .workshop-event-card__image img {
+    transform: scale(1.03);
+  }
+
+  .workshop-event-card__badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 1;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.35em 0.75em;
+    border-radius: 999px;
+    background: var(--color-brass);
+    color: var(--color-cream);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 25%);
+  }
+
+  .workshop-event-card__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: var(--space-2);
+    padding: var(--space-3);
+  }
+
+  .workshop-event-card__title {
+    font-size: 1.375rem;
+    text-shadow: none;
+    overflow-wrap: anywhere;
+  }
+
+  .workshop-event-card__facts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin: 0;
+    font-size: 0.9375rem;
+  }
+
+  .workshop-event-card__facts div {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    gap: var(--space-1);
+  }
+
+  .workshop-event-card__facts dt {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 2.2;
+    text-transform: uppercase;
+    color: var(--color-dark-brass);
+  }
+
+  .workshop-event-card__facts dd {
+    margin: 0;
+    color: var(--color-cream);
+    overflow-wrap: anywhere;
+  }
+
+  .workshop-event-card__description {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  .workshop-event-card__details {
+    align-self: flex-start;
+    margin-top: auto;
+  }
+</style>
