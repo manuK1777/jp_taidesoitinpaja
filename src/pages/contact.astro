@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { sanityClient } from "../lib/sanity";
+import { isPastEvent, sortEvents } from "../lib/workshopEvents";
 
 type InstrumentOption = {
   name: string;
@@ -15,6 +16,25 @@ const instruments: InstrumentOption[] = await sanityClient.fetch(`
     availability
   }
 `);
+
+type EventOption = {
+  title: string;
+  slug: string;
+  startDateTime?: string | null;
+  endDateTime?: string | null;
+  order?: number | null;
+};
+
+const allEvents: EventOption[] = await sanityClient.fetch(`
+  *[_type == "workshopEvent" && defined(slug.current)] {
+    title,
+    "slug": slug.current,
+    startDateTime,
+    endDateTime,
+    order
+  }
+`);
+const upcomingEvents = sortEvents(allEvents.filter((event) => !isPastEvent(event)));
 ---
 
 <Layout
@@ -134,6 +154,17 @@ const instruments: InstrumentOption[] = await sanityClient.fetch(`
                     >
                       {instrument.name}
                       {instrument.availability === "sold" ? " (sold)" : ""}
+                    </option>
+                  ))
+                }
+                {
+                  upcomingEvents.map((event) => (
+                    <option
+                      value={`Event inquiry: ${event.title}`}
+                      data-event-slug={event.slug}
+                      data-title={event.title}
+                    >
+                      Event inquiry: {event.title}
                     </option>
                   ))
                 }
@@ -272,12 +303,19 @@ const instruments: InstrumentOption[] = await sanityClient.fetch(`
       const applyInstrument = () => {
         const option = instrumentSelect.selectedOptions[0];
         const name = option?.value ?? "";
-        subjectInput.value = name ? `Inquiry: ${name}` : defaultSubject;
+        const eventTitle = option?.dataset.title;
 
-        const template =
-          messageTemplates[option?.dataset.availability ?? ""] ??
-          messageTemplates["in-stock"];
-        const prefill = name ? template(name) : "";
+        let prefill = "";
+        if (eventTitle) {
+          subjectInput.value = name;
+          prefill = `Hello, I'd like to know more about the ${eventTitle}.`;
+        } else {
+          subjectInput.value = name ? `Inquiry: ${name}` : defaultSubject;
+          const template =
+            messageTemplates[option?.dataset.availability ?? ""] ??
+            messageTemplates["in-stock"];
+          prefill = name ? template(name) : "";
+        }
 
         // Only overwrite the message if the visitor hasn't typed their own.
         if (messageInput.value === "" || messageInput.value === lastPrefill) {
@@ -288,11 +326,13 @@ const instruments: InstrumentOption[] = await sanityClient.fetch(`
 
       instrumentSelect.addEventListener("change", applyInstrument);
 
-      const wanted = new URLSearchParams(window.location.search).get(
-        "instrument",
-      );
-      const match = Array.from(instrumentSelect.options).find(
-        (option) => option.dataset.slug === wanted,
+      const params = new URLSearchParams(window.location.search);
+      const wantedInstrument = params.get("instrument");
+      const wantedEvent = params.get("event");
+      const match = Array.from(instrumentSelect.options).find((option) =>
+        wantedEvent
+          ? option.dataset.eventSlug === wantedEvent
+          : option.dataset.slug === wantedInstrument,
       );
       if (match) {
         match.selected = true;

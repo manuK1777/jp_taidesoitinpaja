@@ -70,6 +70,7 @@ const [mainImage, ...otherImages] = images;
 const typeLabel = eventTypeLabels[type] ?? type;
 const priceLabel = formatEventPrice(price);
 const isPast = isPastEvent(workshopEvent);
+const inquiryHref = `/contact?event=${encodeURIComponent(slug ?? '')}`;
 ---
 
 <Layout title={title} description={shortDescription ?? undefined}>
@@ -147,7 +148,7 @@ const isPast = isPastEvent(workshopEvent);
             Sign up / more info
           </a>
         ) : (
-          <a href="/contact" class="btn btn--solid event-detail__cta">Ask about this {typeLabel?.toLowerCase()}</a>
+          <a href={inquiryHref} class="btn btn--solid event-detail__cta">Ask about this {typeLabel?.toLowerCase()}</a>
         )
       )}
 
