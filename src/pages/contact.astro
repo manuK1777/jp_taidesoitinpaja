@@ -358,12 +358,16 @@ const upcomingEvents = sortEvents(allEvents.filter((event) => !isPastEvent(event
   }
   .contact__inner {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-4);
     align-items: start;
   }
+  .contact__inner > * {
+    min-width: 0;
+  }
   @media (min-width: 800px) {
     .contact__inner {
-      grid-template-columns: 1fr 1.6fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
       gap: var(--space-5);
     }
   }
@@ -446,17 +450,19 @@ const upcomingEvents = sortEvents(allEvents.filter((event) => !isPastEvent(event
   }
   .contact-form__row {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-3);
   }
   @media (min-width: 560px) {
     .contact-form__row {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
   .contact-form__field {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 0;
   }
   .contact-form__field label {
     font-family: var(--font-mono);
@@ -477,6 +483,13 @@ const upcomingEvents = sortEvents(allEvents.filter((event) => !isPastEvent(event
     border-bottom: 1px solid oklch(35% 0.02 63 / 45%);
     padding: 6px 2px;
     border-radius: 0;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .contact-form__field select {
+    text-overflow: ellipsis;
   }
   .contact-form__field textarea {
     resize: vertical;
