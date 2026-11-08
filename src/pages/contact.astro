@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import SocialLinks from "../components/SocialLinks.astro";
 import { sanityClient } from "../lib/sanity";
 import { isPastEvent, sortEvents } from "../lib/workshopEvents";
 
@@ -73,6 +74,7 @@ const upcomingEvents = sortEvents(allEvents.filter((event) => !isPastEvent(event
                 taidesoitinpaja@gmail.com
               </a>
             </p>
+            <SocialLinks size={44} class="contact__social" />
           </div>
         </div>
 
@@ -412,6 +414,9 @@ const upcomingEvents = sortEvents(allEvents.filter((event) => !isPastEvent(event
   }
   .contact__block a:hover {
     color: var(--color-dark-brass);
+  }
+  .contact__block :global(.contact__social) {
+    margin-top: var(--space-2);
   }
   .contact__email {
     text-decoration: underline;

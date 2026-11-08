@@ -3,7 +3,6 @@ import Layout from '../layouts/Layout.astro';
 import InstrumentCard from '../components/InstrumentCard.astro';
 import GalleryFilmstrip from '../components/GalleryFilmstrip.astro';
 import Lightbox from '../components/Lightbox.astro';
-import WorkshopModal from '../components/WorkshopModal.astro';
 import { sanityClient } from '../lib/sanity';
 
 // Static assets — 
@@ -54,12 +53,6 @@ const homePage = await sanityClient.fetch(`
   }
 `);
 
-const upcomingWorkshops = await sanityClient.fetch(`
-  *[_type == "workshopEvent" && defined(startDateTime) && startDateTime > now()]
-    | order(startDateTime asc) [0...4] {
-    title, shortDescription, startDateTime, location
-  }
-`);
 ---
 
 <Layout title="Home">
@@ -123,9 +116,6 @@ const upcomingWorkshops = await sanityClient.fetch(`
             <h3>{service.title}</h3>
             <div class="services__tag">{service.tag}</div>
             <p>{service.body}</p>
-            {service.title === 'Workshops & Events' && (
-              <WorkshopModal events={upcomingWorkshops} />
-            )}
           </li>
         ))}
       </ul>

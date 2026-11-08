@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import logoMoose from '../assets/logo-icon-moose.webp';
+import SocialLinks from './SocialLinks.astro';
 
 const navItems = [
   { label: 'Home', href: '/' },
@@ -23,6 +24,7 @@ const isCurrent = (href: string) =>
         <Image src={logoMoose} alt="Taidesoitinpaja" width={200} class="site-footer__logo" />
       </div>
       <p class="site-brand__text">Handcrafted folk instruments from Finland</p>
+      <SocialLinks size={40} class="site-footer__social" />
     </div>
     <nav aria-labelledby="footer-explore-heading">
       <h2 class="site-footer__heading" id="footer-explore-heading">Explore</h2>
@@ -77,6 +79,9 @@ const isCurrent = (href: string) =>
   .site-footer .site-brand__text {
     font-size: 0.975rem;
     color: oklch(80% 0.015 80);
+  }
+  .site-footer :global(.site-footer__social) {
+    margin-top: var(--space-2);
   }
   .site-footer__logo {
     height: auto;
