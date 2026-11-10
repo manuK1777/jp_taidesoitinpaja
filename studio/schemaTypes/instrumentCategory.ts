@@ -24,9 +24,8 @@ export default defineType({
       name: 'description',
       title: 'Shared narrative description',
       type: 'array',
-      description: 'The general story/craftsmanship text shared by every instrument of this type — e.g. what a Jouhikko is, what makes a ProIgil distinctive.',
+      description: 'The general story/craftsmanship text shared by every instrument of this type — e.g. what a Jouhikko is, what makes a ProIgil distinctive. Optional: leave empty for one-of-a-kind types (e.g. Experimental Instrument), where each instrument has its own description.',
       of: [defineArrayMember({type: 'block'})],
-      validation: (Rule) => Rule.required(),
     }),
   ],
   preview: {
