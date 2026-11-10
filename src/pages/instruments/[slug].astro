@@ -23,6 +23,7 @@ const instrument = await sanityClient.fetch(
   `
     *[_type == "instrument" && slug.current == $slug][0] {
       name,
+      shortDescription,
       price,
       availability,
       images,
@@ -47,6 +48,7 @@ if (!instrument) {
 
 const {
   name,
+  shortDescription,
   price,
   availability,
   images = [],
@@ -102,7 +104,11 @@ const ctaLabel = ctaLabels[availability] ?? ctaLabels['in-stock'];
 const inquiryHref = `/contact?instrument=${encodeURIComponent(slug ?? '')}`;
 ---
 
-<Layout title={name}>
+<Layout
+  title={name}
+  description={shortDescription ?? undefined}
+  image={gallery.find((item) => item.type === 'image')?.mainSrc}
+>
   <Breadcrumbs
     items={[
       { label: 'Home', href: '/' },
