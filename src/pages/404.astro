@@ -1,0 +1,31 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Page not found" description="The page you are looking for could not be found.">
+  <section class="not-found container">
+    <h1>Page not found</h1>
+    <p>Sorry, we couldn't find that page. It may have moved, or the address may be mistyped.</p>
+    <p class="not-found__actions">
+      <a href="/" class="btn btn--solid">Back to home</a>
+    </p>
+  </section>
+</Layout>
+
+<style>
+  .not-found {
+    padding-block: var(--space-5);
+    text-align: center;
+    min-height: 50vh;
+  }
+  .not-found h1 {
+    margin-bottom: var(--space-3);
+  }
+  .not-found__actions {
+    margin-top: var(--space-4);
+    display: flex;
+    gap: var(--space-2);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+</style>
