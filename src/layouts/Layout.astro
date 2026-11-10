@@ -6,9 +6,20 @@ import SiteHeader from '../components/SiteHeader.astro';
 interface Props {
   title: string;
   description?: string;
+  image?: string;
+  noindex?: boolean;
 }
 
-const { title, description = 'Handcrafted Nordic and Central Asian folk instruments, made by hand in Karjalohja, Finland.' } = Astro.props;
+const {
+  title,
+  description = 'Handcrafted Nordic and Central Asian folk instruments, made by hand in Karjalohja, Finland.',
+  image,
+  noindex = false,
+} = Astro.props;
+
+const fullTitle = `${title} · Taidesoitinpaja`;
+const canonical = Astro.site && !noindex ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const ogImage = image;
 ---
 
 <!DOCTYPE html>
@@ -17,7 +28,18 @@ const { title, description = 'Handcrafted Nordic and Central Asian folk instrume
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <title>{title} · Taidesoitinpaja</title>
+    <title>{fullTitle}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Taidesoitinpaja" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
     <noscript>
       <style>
         .reveal {
