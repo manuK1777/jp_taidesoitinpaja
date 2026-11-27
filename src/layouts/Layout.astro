@@ -5,6 +5,7 @@ import SiteHeader from '../components/SiteHeader.astro';
 
 interface Props {
   title: string;
+  absoluteTitle?: string;
   description?: string;
   image?: string;
   noindex?: boolean;
@@ -12,12 +13,13 @@ interface Props {
 
 const {
   title,
+  absoluteTitle,
   description = 'Handcrafted Nordic and Central Asian folk instruments, made by hand in Karjalohja, Finland.',
   image,
   noindex = false,
 } = Astro.props;
 
-const fullTitle = `${title} · Taidesoitinpaja`;
+const fullTitle = absoluteTitle ?? `${title} · Taidesoitinpaja`;
 const canonical = Astro.site && !noindex ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 const ogImage = image ?? new URL('/images/og-default.jpg', Astro.url.origin).href;
 ---

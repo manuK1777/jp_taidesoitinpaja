@@ -22,7 +22,10 @@ const workshopEvents = await sanityClient.fetch(`
 const sortedEvents = sortEvents<any>(workshopEvents);
 ---
 
-<Layout title="Workshops & Events">
+<Layout
+  title="Workshops & Events"
+  description="Instrument-making workshops, overtone throat singing courses and folk music festivals from Taidesoitinpaja in Finland."
+>
   <section class="workshops-band wood-band reveal" aria-labelledby="workshops-heading">
     <div class="container">
       <div class="workshops-band__header">
