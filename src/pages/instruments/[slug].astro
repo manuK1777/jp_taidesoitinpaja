@@ -489,7 +489,7 @@ const inquiryHref = `/contact?instrument=${encodeURIComponent(slug ?? '')}`;
 
   @media (min-width: 900px) {
     .instrument-detail {
-      grid-template-columns: minmax(0, 700px) 1fr;
+      grid-template-columns: minmax(0, 700px) minmax(280px, 1fr);
       align-items: start;
       column-gap: 0px;
     }
@@ -870,7 +870,7 @@ const inquiryHref = `/contact?instrument=${encodeURIComponent(slug ?? '')}`;
   @media (min-width: 900px) {
     .instrument-detail__gallery {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       gap: var(--space-2);
     }
