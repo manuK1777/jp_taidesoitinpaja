@@ -19,7 +19,7 @@ const {
 
 const fullTitle = `${title} · Taidesoitinpaja`;
 const canonical = Astro.site && !noindex ? new URL(Astro.url.pathname, Astro.site).href : undefined;
-const ogImage = image;
+const ogImage = image ?? new URL('/images/og-default.jpg', Astro.url.origin).href;
 ---
 
 <!DOCTYPE html>
