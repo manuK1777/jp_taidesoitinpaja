@@ -3,7 +3,8 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://www.taidesoitinpaja.com',
+  // TODO at migration: switch to 'https://www.taidesoitinpaja.com'
+  site: 'https://jp-taidesoitinpaja.pages.dev',
   image: {
     domains: ['cdn.sanity.io'],
   },
