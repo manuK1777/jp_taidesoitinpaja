@@ -67,13 +67,16 @@ const images = [coverImage, ...(additionalImages ?? [])]
   }));
 
 const [mainImage, ...otherImages] = images;
+const ogImage = coverImage
+  ? urlFor(coverImage).width(1200).height(630).fit('crop').url()
+  : undefined;
 const typeLabel = eventTypeLabels[type] ?? type;
 const priceLabel = formatEventPrice(price);
 const isPast = isPastEvent(workshopEvent);
 const inquiryHref = `/contact?event=${encodeURIComponent(slug ?? '')}`;
 ---
 
-<Layout title={title} description={shortDescription ?? undefined}>
+<Layout title={title} description={shortDescription ?? undefined} image={ogImage}>
   <Breadcrumbs
     items={[
       { label: 'Home', href: '/' },
